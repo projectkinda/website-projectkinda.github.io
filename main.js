@@ -80,28 +80,7 @@ function initHeroAnimation() {
     }, '-=380');
 }
 
-// ── Mobile nav hamburger ──────────────────────────────────
-function initMobileNav() {
-  const btn  = document.getElementById('nav-hamburger');
-  const menu = document.getElementById('nav-mobile');
-  if (!btn || !menu) return;
 
-  function close() {
-    btn.classList.remove('open');
-    menu.classList.remove('open');
-    btn.setAttribute('aria-expanded', 'false');
-    menu.setAttribute('aria-hidden', 'true');
-  }
-
-  btn.addEventListener('click', () => {
-    const open = btn.classList.toggle('open');
-    menu.classList.toggle('open', open);
-    btn.setAttribute('aria-expanded', String(open));
-    menu.setAttribute('aria-hidden', String(!open));
-  });
-
-  menu.querySelectorAll('.scroll-to').forEach(el => el.addEventListener('click', close));
-}
 
 // ── Custom cursor (global, pointer-fine only) ─────────────
 function initCustomCursor() {
@@ -692,10 +671,10 @@ function initHowSection() {
   const HALF = 0.04;
 
   const states = [
-    { bg: [14, 14, 17], text: [245, 240, 228], glow: [74, 127, 165, 0.10] },
-    { bg: [14, 14, 17], text: [245, 240, 228], glow: [74, 127, 165, 0.18] },
-    { bg: [14, 14, 17], text: [245, 240, 228], glow: [74, 127, 165, 0.26] },
-    { bg: [14, 14, 17], text: [245, 240, 228], glow: [74, 127, 165, 0.36] },
+    { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.08] },
+    { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.12] },
+    { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.16] },
+    { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.20] },
   ];
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -769,7 +748,7 @@ function initHowSection() {
     if (progressTrack) progressTrack.style.color = c.text;
     if (phoneFrame) {
       phoneFrame.style.boxShadow =
-        `0 0 0 1px rgba(0,0,0,0.2),0 40px 80px rgba(0,0,0,0.3),0 0 60px ${c.glow}`;
+        `0 0 0 1px rgba(0,0,0,0.06),0 40px 80px rgba(0,0,0,0.12),0 0 60px ${c.glow}`;
     }
 
     const active = Math.min(Math.floor(progress * NUM), NUM - 1);
@@ -797,7 +776,6 @@ function throttle(fn, ms) {
 // ── Init ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initSmoothScroll();
-  initMobileNav();
   initHeroVideos();
   initHeroAnimation();
   initCustomCursor();
