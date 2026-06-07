@@ -368,6 +368,29 @@ function initCarousel() {
   let touchStartX = 0;
   let mouseStartX = 0;
   let isDragging  = false;
+  let isHovered   = false;
+  let autoPlayInterval = null;
+
+  function startAutoPlay() {
+    stopAutoPlay();
+    autoPlayInterval = setInterval(() => {
+      goTo(active + 1);
+    }, 2000);
+  }
+
+  function stopAutoPlay() {
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = null;
+    }
+  }
+
+  function handleManualGoTo(idx) {
+    goTo(idx);
+    if (!isHovered) {
+      startAutoPlay();
+    }
+  }
 
   function getCardWidth() {
     const w = window.innerWidth;
@@ -412,7 +435,7 @@ function initCarousel() {
     pip.className = 'carousel-pip';
     pip.setAttribute('aria-label', `Card ${i + 1}`);
     pip.setAttribute('role', 'tab');
-    pip.addEventListener('click', () => goTo(i));
+    pip.addEventListener('click', () => handleManualGoTo(i));
     pipsEl.appendChild(pip);
   });
 
@@ -469,28 +492,51 @@ function initCarousel() {
       `radial-gradient(ellipse 72% 60% at 50% 50%, rgba(${rgb},0.16), transparent 62%)`;
   }
 
-  prevBtn.addEventListener('click', () => goTo(active - 1));
-  nextBtn.addEventListener('click', () => goTo(active + 1));
+  prevBtn.addEventListener('click', () => handleManualGoTo(active - 1));
+  nextBtn.addEventListener('click', () => handleManualGoTo(active + 1));
 
   // Touch — listen on the full stage so side cards are swipeable
   const dragTarget = stage || scene;
-  dragTarget.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-  }, { passive: true });
-  dragTarget.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 36) goTo(active + (dx < 0 ? 1 : -1));
-  }, { passive: true });
+  if (dragTarget) {
+    dragTarget.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    
+    dragTarget.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 36) {
+        handleManualGoTo(active + (dx < 0 ? 1 : -1));
+      }
+    }, { passive: true });
 
-  // Mouse drag
-  dragTarget.addEventListener('mousedown', e => { mouseStartX = e.clientX; isDragging = true; });
-  dragTarget.addEventListener('mouseup', e => {
-    if (!isDragging) return;
-    isDragging = false;
-    const dx = e.clientX - mouseStartX;
-    if (Math.abs(dx) > 36) goTo(active + (dx < 0 ? 1 : -1));
-  });
-  dragTarget.addEventListener('mouseleave', () => { isDragging = false; });
+    // Mouse drag
+    dragTarget.addEventListener('mousedown', e => {
+      mouseStartX = e.clientX;
+      isDragging = true;
+    });
+    
+    dragTarget.addEventListener('mouseup', e => {
+      if (!isDragging) return;
+      isDragging = false;
+      const dx = e.clientX - mouseStartX;
+      if (Math.abs(dx) > 36) {
+        handleManualGoTo(active + (dx < 0 ? 1 : -1));
+      } else if (!isHovered) {
+        startAutoPlay();
+      }
+    });
+    
+    dragTarget.addEventListener('mouseleave', () => {
+      isDragging = false;
+      isHovered = false;
+      startAutoPlay();
+    });
+    
+    dragTarget.addEventListener('mouseenter', () => {
+      isHovered = true;
+      stopAutoPlay();
+    });
+  }
 
   // Keyboard
   document.addEventListener('keydown', e => {
@@ -498,14 +544,15 @@ function initCarousel() {
     if (!sf) return;
     const r = sf.getBoundingClientRect();
     if (r.top > window.innerHeight || r.bottom < 0) return;
-    if (e.key === 'ArrowLeft')  goTo(active - 1);
-    if (e.key === 'ArrowRight') goTo(active + 1);
+    if (e.key === 'ArrowLeft')  handleManualGoTo(active - 1);
+    if (e.key === 'ArrowRight') handleManualGoTo(active + 1);
   });
 
   // Reposition on resize
   window.addEventListener('resize', () => goTo(active));
 
   goTo(0);
+  startAutoPlay();
 }
 
 // ── Confession Wall ───────────────────────────────────────
