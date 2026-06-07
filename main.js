@@ -345,12 +345,12 @@ function initScrollAnimations() {
 
 // ── 3D Carousel — failure mode cards ─────────────────────
 const carouselCards = [
-  { code: 'ACT', label: 'Activation failure',  color: '#7EC8E3', quote: '"I know exactly what I need to do. I just can\'t make myself start."' },
-  { code: 'DEC', label: 'Decision paralysis',  color: '#F0B429', quote: '"I have so many things I could do that I end up doing none of them."' },
-  { code: 'PER', label: 'Perfectionism trap',  color: '#B0A0E0', quote: '"It\'s not ready yet. It needs to be right before I can send it."' },
-  { code: 'MOM', label: 'Momentum dependency', color: '#7AC8B8', quote: '"I work well — but only when I\'m already in the zone. Getting there is the problem."' },
-  { code: 'BUR', label: 'Burnout / depletion', color: '#E8A598', quote: '"I used to be productive. Now even small tasks feel like too much."' },
-  { code: 'IDN', label: 'Identity fog',        color: '#9DB89A', quote: '"I\'m busy all the time but I don\'t feel like I\'m moving toward anything."' },
+  { code: 'ACT', label: 'Activation failure',  color: '#7EC8E3', icon: 'ph-bold ph-lightning', quote: '"I know exactly what I need to do. I just can\'t make myself start."' },
+  { code: 'DEC', label: 'Decision paralysis',  color: '#F0B429', icon: 'ph-bold ph-arrows-split', quote: '"I have so many things I could do that I end up doing none of them."' },
+  { code: 'PER', label: 'Perfectionism trap',  color: '#B0A0E0', icon: 'ph-bold ph-target', quote: '"It\'s not ready yet. It needs to be right before I can send it."' },
+  { code: 'MOM', label: 'Momentum dependency', color: '#7AC8B8', icon: 'ph-bold ph-gauge', quote: '"I work well — but only when I\'m already in the zone. Getting there is the problem."' },
+  { code: 'BUR', label: 'Burnout / depletion', color: '#E8A598', icon: 'ph-bold ph-battery-empty', quote: '"I used to be productive. Now even small tasks feel like too much."' },
+  { code: 'IDN', label: 'Identity fog',        color: '#9DB89A', icon: 'ph-bold ph-compass', quote: '"I\'m busy all the time but I don\'t feel like I\'m moving toward anything."' },
 ];
 
 function initCarousel() {
@@ -421,7 +421,9 @@ function initCarousel() {
     card.className = 'carousel-card';
     card.dataset.index = i;
     card.innerHTML = `
-      <div class="card-dot" style="background:${c.color};box-shadow:0 0 16px ${c.color}66"></div>
+      <div class="card-dot" style="background:${c.color};box-shadow:0 0 16px ${c.color}66">
+        <i class="${c.icon}"></i>
+      </div>
       <div class="card-code" style="color:${c.color}">${c.code}</div>
       <div class="card-label">${c.label}</div>
       <p class="card-quote">${c.quote}</p>
