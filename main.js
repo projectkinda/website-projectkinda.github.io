@@ -454,23 +454,23 @@ function initCarousel() {
 
       if (abs === 0) {
         tx = 0;                   ry =  0;   tz =   0; rz = 1.9; scale = 1;    opacity = 1;    zIndex = 10;
-        bg     = '#0e0f11';
-        border = 'rgba(255,255,255,0.13)';
-        shadow = '0 28px 72px rgba(0,0,0,0.80)';
+        bg     = 'var(--carousel-card-bg-0)';
+        border = 'var(--carousel-card-border-0)';
+        shadow = 'var(--carousel-card-shadow-0)';
       } else if (abs === 1) {
         tx = sign * cw * 1.08;   ry = sign * 50; tz = -50; rz = 0; scale = 0.88; opacity = 0.75; zIndex = 6;
-        bg     = '#0b0b0e';
-        border = 'rgba(255,255,255,0.07)';
-        shadow = '0 18px 50px rgba(0,0,0,0.65)';
+        bg     = 'var(--carousel-card-bg-1)';
+        border = 'var(--carousel-card-border-1)';
+        shadow = 'var(--carousel-card-shadow-1)';
       } else if (abs === 2) {
         tx = sign * cw * 1.95;   ry = sign * 65; tz = -120; rz = 0; scale = 0.7; opacity = 0.28; zIndex = 3;
-        bg     = '#090912';
-        border = 'rgba(255,255,255,0.04)';
-        shadow = '0 14px 36px rgba(0,0,0,0.55)';
+        bg     = 'var(--carousel-card-bg-2)';
+        border = 'var(--carousel-card-border-2)';
+        shadow = 'var(--carousel-card-shadow-2)';
       } else {
         tx = sign * cw * 2.6;    ry = sign * 75; tz = -200; rz = 0; scale = 0.5; opacity = 0;    zIndex = 0;
-        bg     = '#080810';
-        border = 'rgba(255,255,255,0.02)';
+        bg     = 'var(--carousel-card-bg-3)';
+        border = 'var(--carousel-card-border-3)';
         shadow = 'none';
       }
 
