@@ -4,7 +4,7 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 
 /* ════════════════════════════════════════
    GRAIN — animated film-grain overlay
@@ -623,10 +623,14 @@ a   { text-decoration: none; }
 }
 
 @media (max-width: 900px) {
+  .how-section {
+    height: 300vh; /* Shorter scroll height for snappier mobile paging */
+  }
+
   .how-layout {
     grid-template-columns: 1fr;
-    padding: 0 32px;
-    gap: 40px;
+    padding: 0 24px;
+    gap: 16px;
     justify-items: center;
   }
 
@@ -635,8 +639,13 @@ a   { text-decoration: none; }
     justify-content: center;
   }
 
+  .phone-frame {
+    width: 160px; /* Compact mobile size */
+    border-radius: 28px; /* Proportional border radius */
+  }
+
   .how-copy {
-    height: 240px;
+    height: 150px; /* Prevents overflow clipping */
     width: 100%;
   }
 
@@ -647,8 +656,19 @@ a   { text-decoration: none; }
     max-width: 100%;
   }
 
-  .phone-frame {
-    width: 220px;
+  .moment-eyebrow {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .moment-headline {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .moment-body {
+    font-size: 13px;
+    line-height: 1.45;
   }
 
   .progress-track {
@@ -906,6 +926,7 @@ a   { text-decoration: none; }
 .carousel-wrap {
   position: relative;
   padding: 72px 0 72px;
+  overflow-x: hidden;
 }
 
 .carousel-glow {
