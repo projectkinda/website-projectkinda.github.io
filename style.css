@@ -495,7 +495,11 @@ a   { text-decoration: none; }
 
 .moment {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  max-width: 520px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -511,7 +515,7 @@ a   { text-decoration: none; }
 
 .moment-eyebrow {
   font-family: 'Nunito', sans-serif;
-  font-size: 11px;
+  font-size: clamp(11px, 1vw, 13px);
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -521,7 +525,7 @@ a   { text-decoration: none; }
 
 .moment-headline {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: clamp(36px, 5vw, 64px);
+  font-size: clamp(38px, 4.5vw, 76px);
   font-weight: 600;
   line-height: 1.1;
   margin: 0 0 22px;
@@ -529,7 +533,7 @@ a   { text-decoration: none; }
 
 .moment-body {
   font-family: 'Nunito', sans-serif;
-  font-size: clamp(16px, 1.5vw, 19px);
+  font-size: clamp(16px, 1.4vw, 21px);
   line-height: 1.65;
   opacity: 0.7;
   margin: 0;
@@ -538,8 +542,9 @@ a   { text-decoration: none; }
 
 .how-phone {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  width: 100%;
 }
 
 .phone-frame {
@@ -627,11 +632,19 @@ a   { text-decoration: none; }
 
   .how-phone {
     order: -1;
+    justify-content: center;
   }
 
   .how-copy {
     height: 240px;
     width: 100%;
+  }
+
+  .moment {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
   }
 
   .phone-frame {
