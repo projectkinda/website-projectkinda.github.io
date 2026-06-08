@@ -797,6 +797,7 @@ a   { text-decoration: none; }
     height: auto !important;
     min-height: 85vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     padding: 60px 0 80px;
   }
@@ -828,13 +829,13 @@ a   { text-decoration: none; }
     width: 100%;
     max-width: 100%;
     transition: opacity 0.4s ease, transform 0.4s ease !important;
-    text-align: right;
-    align-items: flex-end;
+    text-align: left;
+    align-items: flex-start;
   }
   
   .moment-body {
-    margin-left: auto;
-    margin-right: 0;
+    margin-left: 0;
+    margin-right: auto;
   }
 
   .phone-frame {
