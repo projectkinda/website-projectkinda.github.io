@@ -814,6 +814,7 @@ function initHowSection() {
 
   update();
   window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
 }
 
 // ── Throttle ──────────────────────────────────────────────
