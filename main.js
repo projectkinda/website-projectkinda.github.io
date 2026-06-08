@@ -454,23 +454,23 @@ function initCarousel() {
 
       if (abs === 0) {
         tx = 0;                   ry =  0;   tz =   0; rz = 1.9; scale = 1;    opacity = 1;    zIndex = 10;
-        bg     = 'var(--carousel-card-bg-0)';
-        border = 'var(--carousel-card-border-0)';
-        shadow = 'var(--carousel-card-shadow-0)';
+        bg     = '#0e0f11';
+        border = 'rgba(255,255,255,0.13)';
+        shadow = '0 28px 72px rgba(0,0,0,0.80)';
       } else if (abs === 1) {
         tx = sign * cw * 1.08;   ry = sign * 50; tz = -50; rz = 0; scale = 0.88; opacity = 0.75; zIndex = 6;
-        bg     = 'var(--carousel-card-bg-1)';
-        border = 'var(--carousel-card-border-1)';
-        shadow = 'var(--carousel-card-shadow-1)';
+        bg     = '#0b0b0e';
+        border = 'rgba(255,255,255,0.07)';
+        shadow = '0 18px 50px rgba(0,0,0,0.65)';
       } else if (abs === 2) {
         tx = sign * cw * 1.95;   ry = sign * 65; tz = -120; rz = 0; scale = 0.7; opacity = 0.28; zIndex = 3;
-        bg     = 'var(--carousel-card-bg-2)';
-        border = 'var(--carousel-card-border-2)';
-        shadow = 'var(--carousel-card-shadow-2)';
+        bg     = '#090912';
+        border = 'rgba(255,255,255,0.04)';
+        shadow = '0 14px 36px rgba(0,0,0,0.55)';
       } else {
         tx = sign * cw * 2.6;    ry = sign * 75; tz = -200; rz = 0; scale = 0.5; opacity = 0;    zIndex = 0;
-        bg     = 'var(--carousel-card-bg-3)';
-        border = 'var(--carousel-card-border-3)';
+        bg     = '#080810';
+        border = 'rgba(255,255,255,0.02)';
         shadow = 'none';
       }
 
@@ -719,18 +719,11 @@ function initHowSection() {
   const NUM  = 4;
   const HALF = 0.04;
 
-  const lightStates = [
+  const states = [
     { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.08] },
     { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.12] },
     { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.16] },
     { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.20] },
-  ];
-
-  const darkStates = [
-    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.08] },
-    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.12] },
-    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.16] },
-    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.20] },
   ];
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -745,21 +738,17 @@ function initHowSection() {
   }
 
   function colorsAt(p) {
-    if (isNaN(p)) p = 0;
-    const isDark = document.documentElement.classList.contains('theme-dark');
-    const currentStates = isDark ? darkStates : lightStates;
-    const s = Math.max(0, Math.min(1, p)) * (currentStates.length - 1);
-    const i = Math.min(Math.floor(s), currentStates.length - 2);
+    const s = Math.max(0, Math.min(1, p)) * (states.length - 1);
+    const i = Math.min(Math.floor(s), states.length - 2);
     const t = s - i;
     return {
-      bg:   lerpColor(currentStates[i].bg,   currentStates[i + 1].bg,   t),
-      text: lerpColor(currentStates[i].text, currentStates[i + 1].text, t),
-      glow: lerpColor(currentStates[i].glow, currentStates[i + 1].glow, t),
+      bg:   lerpColor(states[i].bg,   states[i + 1].bg,   t),
+      text: lerpColor(states[i].text, states[i + 1].text, t),
+      glow: lerpColor(states[i].glow, states[i + 1].glow, t),
     };
   }
 
   function momentStyle(p, idx) {
-    if (isNaN(p)) p = 0;
     const start = idx / NUM;
     const end   = (idx + 1) / NUM;
     let opacity = 0, ty = 30;
@@ -797,12 +786,7 @@ function initHowSection() {
     const rect      = section.getBoundingClientRect();
     const scrolled  = -rect.top;
     const range     = section.offsetHeight - window.innerHeight;
-    
-    let progress = 0;
-    if (range > 0) {
-      progress = Math.max(0, Math.min(1, scrolled / range));
-    }
-    if (isNaN(progress)) progress = 0;
+    const progress  = Math.max(0, Math.min(1, scrolled / range));
 
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
     if (progressTrack) progressTrack.classList.toggle('visible', inView);
@@ -853,61 +837,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel();
   initForm();
   initHowSection();
-  initTheme();
 
   updateNavState();
   window.addEventListener('scroll', throttle(updateNavState, 16), { passive: true });
 });
-
-// ── Theme Switcher — System & manual override ──────────────
-function initTheme() {
-  const switcher = document.getElementById('theme-switcher');
-  if (!switcher) return;
-
-  const buttons = switcher.querySelectorAll('.switcher-btn');
-  let currentTheme = localStorage.getItem('theme') || 'system';
-
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function applyTheme(theme) {
-    if (theme === 'system') {
-      const isDark = mediaQuery.matches;
-      document.documentElement.classList.toggle('theme-dark', isDark);
-      document.documentElement.classList.toggle('theme-light', !isDark);
-    } else if (theme === 'dark') {
-      document.documentElement.classList.add('theme-dark');
-      document.documentElement.classList.remove('theme-light');
-    } else {
-      document.documentElement.classList.add('theme-light');
-      document.documentElement.classList.remove('theme-dark');
-    }
-
-    // Update switcher UI
-    buttons.forEach(btn => {
-      const active = btn.dataset.theme === theme;
-      btn.classList.toggle('active', active);
-    });
-
-    // Trigger scroll update to recalculate scroll-driven background colors immediately
-    window.dispatchEvent(new Event('scroll'));
-  }
-
-  // Listen to switcher button clicks
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentTheme = btn.dataset.theme;
-      localStorage.setItem('theme', currentTheme);
-      applyTheme(currentTheme);
-    });
-  });
-
-  // Listen to system theme changes in real-time
-  mediaQuery.addEventListener('change', () => {
-    if (currentTheme === 'system') {
-      applyTheme('system');
-    }
-  });
-
-  // Initial application
-  applyTheme(currentTheme);
-}
