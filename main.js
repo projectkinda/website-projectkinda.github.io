@@ -719,11 +719,18 @@ function initHowSection() {
   const NUM  = 4;
   const HALF = 0.04;
 
-  const states = [
+  const lightStates = [
     { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.08] },
     { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.12] },
     { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.16] },
     { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.20] },
+  ];
+
+  const darkStates = [
+    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.08] },
+    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.12] },
+    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.16] },
+    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.20] },
   ];
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -738,13 +745,15 @@ function initHowSection() {
   }
 
   function colorsAt(p) {
-    const s = Math.max(0, Math.min(1, p)) * (states.length - 1);
-    const i = Math.min(Math.floor(s), states.length - 2);
+    const isDark = document.documentElement.classList.contains('theme-dark');
+    const currentStates = isDark ? darkStates : lightStates;
+    const s = Math.max(0, Math.min(1, p)) * (currentStates.length - 1);
+    const i = Math.min(Math.floor(s), currentStates.length - 2);
     const t = s - i;
     return {
-      bg:   lerpColor(states[i].bg,   states[i + 1].bg,   t),
-      text: lerpColor(states[i].text, states[i + 1].text, t),
-      glow: lerpColor(states[i].glow, states[i + 1].glow, t),
+      bg:   lerpColor(currentStates[i].bg,   currentStates[i + 1].bg,   t),
+      text: lerpColor(currentStates[i].text, currentStates[i + 1].text, t),
+      glow: lerpColor(currentStates[i].glow, currentStates[i + 1].glow, t),
     };
   }
 
@@ -837,7 +846,61 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel();
   initForm();
   initHowSection();
+  initTheme();
 
   updateNavState();
   window.addEventListener('scroll', throttle(updateNavState, 16), { passive: true });
 });
+
+// ── Theme Switcher — System & manual override ──────────────
+function initTheme() {
+  const switcher = document.getElementById('theme-switcher');
+  if (!switcher) return;
+
+  const buttons = switcher.querySelectorAll('.switcher-btn');
+  let currentTheme = localStorage.getItem('theme') || 'system';
+
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function applyTheme(theme) {
+    if (theme === 'system') {
+      const isDark = mediaQuery.matches;
+      document.documentElement.classList.toggle('theme-dark', isDark);
+      document.documentElement.classList.toggle('theme-light', !isDark);
+    } else if (theme === 'dark') {
+      document.documentElement.classList.add('theme-dark');
+      document.documentElement.classList.remove('theme-light');
+    } else {
+      document.documentElement.classList.add('theme-light');
+      document.documentElement.classList.remove('theme-dark');
+    }
+
+    // Update switcher UI
+    buttons.forEach(btn => {
+      const active = btn.dataset.theme === theme;
+      btn.classList.toggle('active', active);
+    });
+
+    // Trigger scroll update to recalculate scroll-driven background colors immediately
+    window.dispatchEvent(new Event('scroll'));
+  }
+
+  // Listen to switcher button clicks
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTheme = btn.dataset.theme;
+      localStorage.setItem('theme', currentTheme);
+      applyTheme(currentTheme);
+    });
+  });
+
+  // Listen to system theme changes in real-time
+  mediaQuery.addEventListener('change', () => {
+    if (currentTheme === 'system') {
+      applyTheme('system');
+    }
+  });
+
+  // Initial application
+  applyTheme(currentTheme);
+}
