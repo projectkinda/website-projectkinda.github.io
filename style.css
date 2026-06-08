@@ -481,11 +481,11 @@ a   { text-decoration: none; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 80px;
   width: 100%;
-  gap: 80px;
+  gap: clamp(40px, 6vw, 100px);
 }
 
 .how-copy {
@@ -533,7 +533,7 @@ a   { text-decoration: none; }
   line-height: 1.65;
   opacity: 0.7;
   margin: 0;
-  max-width: 420px;
+  max-width: 480px;
 }
 
 .how-phone {
@@ -544,7 +544,9 @@ a   { text-decoration: none; }
 
 .phone-frame {
   position: relative;
-  width: 280px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 72vh;
   aspect-ratio: 9 / 19.5;
   border-radius: 44px;
   border: 1.5px solid rgba(26, 26, 26, 0.08);
