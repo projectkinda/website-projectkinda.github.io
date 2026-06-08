@@ -274,8 +274,7 @@ a   { text-decoration: none; }
   letter-spacing: -0.01em;
 }
 
-.logo-short,
-.nav-text-short {
+.logo-short {
   display: none;
 }
 
@@ -720,20 +719,7 @@ a   { text-decoration: none; }
 
 @media (max-width: 900px) {
   .how-section {
-    height: auto;
-    padding: 64px 0 80px;
-  }
-
-  .how-sticky {
-    position: relative;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: transparent !important;
-    color: inherit;
-    gap: 24px;
+    height: 300vh; /* Shorter scroll height for snappier mobile paging */
   }
 
   .how-layout {
@@ -763,7 +749,6 @@ a   { text-decoration: none; }
     right: 0;
     width: 100%;
     max-width: 100%;
-    transition: opacity 0.4s ease, transform 0.4s ease;
   }
 
   .moment-eyebrow {
@@ -782,24 +767,7 @@ a   { text-decoration: none; }
   }
 
   .progress-track {
-    position: relative;
-    right: auto;
-    top: auto;
-    transform: none;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 24px;
-    opacity: 1 !important;
-    pointer-events: auto;
-    z-index: 10;
-  }
-
-  .progress-dot {
-    width: 8px;
-    height: 8px;
-    cursor: pointer;
+    display: none;
   }
 }
 
@@ -1277,26 +1245,20 @@ a   { text-decoration: none; }
     padding: 6px 8px 6px 14px;
     gap: 10px;
   }
-  .logo-full,
-  .nav-text-full {
+  .logo-full {
     display: none;
   }
-  .logo-short,
-  .nav-text-short {
-    display: inline;
-  }
   .logo-short {
+    display: inline;
     font-size: 20px;
   }
   .nav-link {
     font-size: 12px;
     padding: 6px 8px;
-    white-space: nowrap;
   }
   .btn-nav {
     font-size: 12px;
     padding: 8px 14px;
-    white-space: nowrap;
   }
 }
 

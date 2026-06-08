@@ -745,6 +745,7 @@ function initHowSection() {
   }
 
   function colorsAt(p) {
+    if (isNaN(p)) p = 0;
     const isDark = document.documentElement.classList.contains('theme-dark');
     const currentStates = isDark ? darkStates : lightStates;
     const s = Math.max(0, Math.min(1, p)) * (currentStates.length - 1);
@@ -758,6 +759,7 @@ function initHowSection() {
   }
 
   function momentStyle(p, idx) {
+    if (isNaN(p)) p = 0;
     const start = idx / NUM;
     const end   = (idx + 1) / NUM;
     let opacity = 0, ty = 30;
@@ -791,110 +793,16 @@ function initHowSection() {
     observer.observe(section);
   }
 
-  let activeStep = 0;
-
-  function goToStep(idx) {
-    if (idx < 0) idx = 0;
-    if (idx >= NUM) idx = NUM - 1;
-    activeStep = idx;
-
-    const isDark = document.documentElement.classList.contains('theme-dark');
-    const currentStates = isDark ? darkStates : lightStates;
-    const state = currentStates[activeStep];
-
-    const rgbBg   = `rgb(${state.bg.join(',')})`;
-    const rgbText = `rgb(${state.text.join(',')})`;
-    const rgbGlow = `rgba(${state.glow.join(',')})`;
-
-    section.style.background = rgbBg;
-    section.style.color      = rgbText;
-
-    if (progressTrack) {
-      progressTrack.style.color = rgbText;
-    }
-    if (phoneFrame) {
-      phoneFrame.style.boxShadow =
-        `0 0 0 1px rgba(0,0,0,0.06),0 40px 80px rgba(0,0,0,0.12),0 0 60px ${rgbGlow}`;
-    }
-
-    moments.forEach((el, i) => {
-      const active = i === activeStep;
-      el.classList.toggle('active', active);
-      el.style.opacity = active ? 1 : 0;
-      el.style.transform = active ? 'translateY(0)' : 'translateY(20px)';
-    });
-
-    screens.forEach((el, i) => el.classList.toggle('active', i === activeStep));
-    dots.forEach((el, i)    => el.classList.toggle('active', i === activeStep));
-  }
-
-  // Mobile Swipe Gestures
-  let touchStartX = 0;
-  const layout = section.querySelector('.how-layout');
-  if (layout) {
-    layout.addEventListener('touchstart', e => {
-      if (window.innerWidth > 900) return;
-      touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-
-    layout.addEventListener('touchend', e => {
-      if (window.innerWidth > 900) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 40) {
-        if (dx < 0) {
-          goToStep(activeStep + 1);
-        } else {
-          goToStep(activeStep - 1);
-        }
-      }
-    }, { passive: true });
-  }
-
-  // Mobile Pip Clicks
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      if (window.innerWidth <= 900) {
-        goToStep(i);
-      }
-    });
-  });
-
-  // Mobile Phone Clicks (taps advance steps)
-  if (phoneFrame) {
-    phoneFrame.addEventListener('click', () => {
-      if (window.innerWidth <= 900) {
-        goToStep((activeStep + 1) % NUM);
-      }
-    });
-  }
-
-  // Resize Listener to switch layout modes on-the-fly
-  window.addEventListener('resize', () => {
-    if (window.innerWidth <= 900) {
-      sticky.style.background = '';
-      sticky.style.color = '';
-      goToStep(activeStep);
-    } else {
-      section.style.background = '';
-      section.style.color = '';
-      update();
-    }
-  }, { passive: true });
-
   function update() {
-    if (window.innerWidth <= 900) {
-      goToStep(activeStep);
-      return;
-    }
-
-    // Reset mobile styles on desktop resize
-    section.style.background = '';
-    section.style.color = '';
-
     const rect      = section.getBoundingClientRect();
     const scrolled  = -rect.top;
     const range     = section.offsetHeight - window.innerHeight;
-    const progress  = Math.max(0, Math.min(1, scrolled / range));
+    
+    let progress = 0;
+    if (range > 0) {
+      progress = Math.max(0, Math.min(1, scrolled / range));
+    }
+    if (isNaN(progress)) progress = 0;
 
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
     if (progressTrack) progressTrack.classList.toggle('visible', inView);
@@ -920,13 +828,7 @@ function initHowSection() {
     dots.forEach((el, i)    => el.classList.toggle('active', i === active));
   }
 
-  // Initial render check
-  if (window.innerWidth <= 900) {
-    goToStep(0);
-  } else {
-    update();
-  }
-
+  update();
   window.addEventListener('scroll', update, { passive: true });
 }
 
