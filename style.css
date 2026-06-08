@@ -25,7 +25,7 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: clip; }
 
 :root, .theme-light {
   --bg-color: #FFFDFA;
@@ -210,7 +210,7 @@ body {
   font-family: 'Nunito', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
@@ -740,7 +740,7 @@ a   { text-decoration: none; }
   }
 
   .how-copy {
-    height: 150px; /* Prevents overflow clipping */
+    height: 180px; /* Prevents overflow clipping */
     width: 100%;
   }
 
