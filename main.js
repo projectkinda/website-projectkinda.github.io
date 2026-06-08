@@ -454,23 +454,23 @@ function initCarousel() {
 
       if (abs === 0) {
         tx = 0;                   ry =  0;   tz =   0; rz = 1.9; scale = 1;    opacity = 1;    zIndex = 10;
-        bg     = '#0e0f11';
-        border = 'rgba(255,255,255,0.13)';
-        shadow = '0 28px 72px rgba(0,0,0,0.80)';
+        bg     = 'var(--carousel-card-bg-0)';
+        border = 'var(--carousel-card-border-0)';
+        shadow = 'var(--carousel-card-shadow-0)';
       } else if (abs === 1) {
         tx = sign * cw * 1.08;   ry = sign * 50; tz = -50; rz = 0; scale = 0.88; opacity = 0.75; zIndex = 6;
-        bg     = '#0b0b0e';
-        border = 'rgba(255,255,255,0.07)';
-        shadow = '0 18px 50px rgba(0,0,0,0.65)';
+        bg     = 'var(--carousel-card-bg-1)';
+        border = 'var(--carousel-card-border-1)';
+        shadow = 'var(--carousel-card-shadow-1)';
       } else if (abs === 2) {
         tx = sign * cw * 1.95;   ry = sign * 65; tz = -120; rz = 0; scale = 0.7; opacity = 0.28; zIndex = 3;
-        bg     = '#090912';
-        border = 'rgba(255,255,255,0.04)';
-        shadow = '0 14px 36px rgba(0,0,0,0.55)';
+        bg     = 'var(--carousel-card-bg-2)';
+        border = 'var(--carousel-card-border-2)';
+        shadow = 'var(--carousel-card-shadow-2)';
       } else {
         tx = sign * cw * 2.6;    ry = sign * 75; tz = -200; rz = 0; scale = 0.5; opacity = 0;    zIndex = 0;
-        bg     = '#080810';
-        border = 'rgba(255,255,255,0.02)';
+        bg     = 'var(--carousel-card-bg-3)';
+        border = 'var(--carousel-card-border-3)';
         shadow = 'none';
       }
 
@@ -719,11 +719,18 @@ function initHowSection() {
   const NUM  = 4;
   const HALF = 0.04;
 
-  const states = [
+  const lightStates = [
     { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.08] },
     { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.12] },
     { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.16] },
     { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.20] },
+  ];
+
+  const darkStates = [
+    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.08] },
+    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.12] },
+    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.16] },
+    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.20] },
   ];
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -738,13 +745,15 @@ function initHowSection() {
   }
 
   function colorsAt(p) {
-    const s = Math.max(0, Math.min(1, p)) * (states.length - 1);
-    const i = Math.min(Math.floor(s), states.length - 2);
+    const isDark = document.documentElement.classList.contains('theme-dark');
+    const currentStates = isDark ? darkStates : lightStates;
+    const s = Math.max(0, Math.min(1, p)) * (currentStates.length - 1);
+    const i = Math.min(Math.floor(s), currentStates.length - 2);
     const t = s - i;
     return {
-      bg:   lerpColor(states[i].bg,   states[i + 1].bg,   t),
-      text: lerpColor(states[i].text, states[i + 1].text, t),
-      glow: lerpColor(states[i].glow, states[i + 1].glow, t),
+      bg:   lerpColor(currentStates[i].bg,   currentStates[i + 1].bg,   t),
+      text: lerpColor(currentStates[i].text, currentStates[i + 1].text, t),
+      glow: lerpColor(currentStates[i].glow, currentStates[i + 1].glow, t),
     };
   }
 
@@ -817,6 +826,55 @@ function initHowSection() {
   window.addEventListener('resize', update, { passive: true });
 }
 
+// ── Theme System ──────────────────────────────────────────
+function initTheme() {
+  const switcher = document.getElementById('theme-switcher');
+  if (!switcher) return;
+
+  const buttons = switcher.querySelectorAll('.switcher-btn');
+  const systemMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function applyTheme(theme) {
+    let activeTheme = theme;
+    if (theme === 'system') {
+      activeTheme = systemMedia.matches ? 'dark' : 'light';
+    }
+
+    if (activeTheme === 'dark') {
+      document.documentElement.classList.add('theme-dark');
+      document.documentElement.classList.remove('theme-light');
+    } else {
+      document.documentElement.classList.add('theme-light');
+      document.documentElement.classList.remove('theme-dark');
+    }
+
+    buttons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+
+    // Force background updates in scroll sections immediately
+    window.dispatchEvent(new Event('scroll'));
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      localStorage.setItem('theme', theme);
+      applyTheme(theme);
+    });
+  });
+
+  systemMedia.addEventListener('change', () => {
+    const saved = localStorage.getItem('theme') || 'system';
+    if (saved === 'system') {
+      applyTheme('system');
+    }
+  });
+
+  const savedTheme = localStorage.getItem('theme') || 'system';
+  applyTheme(savedTheme);
+}
+
 // ── Throttle ──────────────────────────────────────────────
 function throttle(fn, ms) {
   let last = 0;
@@ -825,6 +883,7 @@ function throttle(fn, ms) {
 
 // ── Init ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   initSmoothScroll();
   initHeroVideos();
   initHeroAnimation();

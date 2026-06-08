@@ -2,6 +2,27 @@
    KINDA — Novu-inspired light theme
    ============================================================ */
 
+@property --bg-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #FFFDFA;
+}
+@property --bg-gradient-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #EEEBE6;
+}
+@property --radial-1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(244, 241, 236, 0.6);
+}
+@property --radial-2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(238, 235, 230, 0.5);
+}
+
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
@@ -56,8 +77,8 @@ html { scroll-behavior: smooth; font-size: 16px; }
 
 .cursor-ring {
   width: 36px; height: 36px;
-  border: 1.5px solid rgba(26, 26, 26, 0.40);
-  background: rgba(26, 26, 26, 0.02);
+  border: 1.5px solid var(--cursor-ring-color);
+  background: var(--cursor-ring-bg);
   transition:
     opacity       0.3s ease,
     width         0.35s cubic-bezier(.4,0,.2,1),
@@ -68,7 +89,7 @@ html { scroll-behavior: smooth; font-size: 16px; }
 
 .cursor-dot {
   width: 5px; height: 5px;
-  background: rgba(26, 26, 26, 0.85);
+  background: var(--cursor-dot-bg);
   z-index: 10000;
   transition: opacity 0.3s ease;
 }
@@ -78,13 +99,13 @@ html { scroll-behavior: smooth; font-size: 16px; }
 
 .cursor-ring.is-hover {
   width: 56px; height: 56px;
-  background: rgba(26, 26, 26, 0.05);
-  border-color: rgba(26, 26, 26, 0.22);
+  background: var(--cursor-ring-hover-bg);
+  border-color: var(--cursor-ring-hover-border);
 }
 
 .cursor-ring.is-click {
   width: 28px; height: 28px;
-  background: rgba(26, 26, 26, 0.10);
+  background: var(--cursor-ring-click-bg);
 }
 
 @media (pointer: coarse) {
@@ -119,35 +140,163 @@ html { scroll-behavior: smooth; font-size: 16px; }
 .js .hero-note { opacity: 0; }
 body {
   font-family: 'Nunito', sans-serif;
-  background-color: #FFFDFA;
-  color: #1A1A1A;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   overflow-x: hidden;
   position: relative;
+  transition: background-color 0.40s ease, color 0.40s ease;
 }
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-color: #FFFDFA;
+  background-color: var(--bg-color);
   background-image: 
-    radial-gradient(circle at 20% 20%, rgba(244, 241, 236, 0.6) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(238, 235, 230, 0.5) 0%, transparent 60%);
+    radial-gradient(circle at 20% 20%, var(--radial-1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--radial-2) 0%, transparent 60%);
   pointer-events: none;
+  transition: background-color 0.40s ease, --radial-1 0.40s ease, --radial-2 0.40s ease;
 }
 img { display: block; max-width: 100%; }
 a   { text-decoration: none; }
 
 /* ── Variables ── */
 :root {
-  --bg:        #FFFFFF;
-  --surface:   #F5F4FA;
-  --text:      #1A1A1A;
-  --muted:     #888888;
-  --muted-2:   #BBBBBB;
-  --accent:    #F0B429;
-  --border:    rgba(0,0,0,0.08);
-  --border-2:  rgba(0,0,0,0.12);
+  /* Common variables */
+  --accent: #F0B429;
+
+  /* Default theme values (Light) */
+  --bg-color: #FFFDFA;
+  --bg-gradient-accent: #EEEBE6;
+  --radial-1: rgba(244, 241, 236, 0.6);
+  --radial-2: rgba(238, 235, 230, 0.5);
+  --text-color: #1A1A1A;
+  --text-muted: rgba(26, 26, 26, 0.65);
+  --text-anchor: rgba(26, 26, 26, 0.35);
+  --border-color: rgba(26, 26, 26, 0.08);
+
+  --cursor-ring-color: rgba(26, 26, 26, 0.40);
+  --cursor-ring-bg: rgba(26, 26, 26, 0.02);
+  --cursor-ring-hover-bg: rgba(26, 26, 26, 0.05);
+  --cursor-ring-hover-border: rgba(26, 26, 26, 0.22);
+  --cursor-ring-click-bg: rgba(26, 26, 26, 0.10);
+  --cursor-dot-bg: rgba(26, 26, 26, 0.85);
+
+  --carousel-btn-border: rgba(26, 26, 26, 0.08);
+  --carousel-btn-bg: rgba(26, 26, 26, 0.03);
+  --carousel-btn-color: rgba(26, 26, 26, 0.6);
+  --carousel-btn-hover-bg: rgba(26, 26, 26, 0.08);
+  --carousel-btn-hover-color: #1A1A1A;
+  --carousel-pip-bg: rgba(26, 26, 26, 0.15);
+
+  --phone-frame-border: rgba(26, 26, 26, 0.08);
+  --confession-label-color: rgba(26, 26, 26, 0.82);
+
+  /* Carousel cards always dark-themed */
+  --carousel-card-bg-0: rgba(10, 11, 14, 0.95);
+  --carousel-card-border-0: rgba(255, 255, 255, 0.15);
+  --carousel-card-shadow-0: 0 30px 70px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  --carousel-card-bg-1: rgba(10, 11, 14, 0.82);
+  --carousel-card-border-1: rgba(255, 255, 255, 0.08);
+  --carousel-card-shadow-1: 0 15px 35px rgba(0, 0, 0, 0.6);
+
+  --carousel-card-bg-2: rgba(10, 11, 14, 0.55);
+  --carousel-card-border-2: rgba(255, 255, 255, 0.04);
+  --carousel-card-shadow-2: 0 5px 15px rgba(0, 0, 0, 0.4);
+
+  --carousel-card-bg-3: rgba(10, 11, 14, 0);
+  --carousel-card-border-3: transparent;
+}
+
+/* Default dark preference (System preference) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #08080a;
+    --bg-gradient-accent: #0f0f13;
+    --radial-1: rgba(160, 200, 255, 0.03);
+    --radial-2: rgba(100, 140, 255, 0.01);
+    --text-color: #FFFFFF;
+    --text-muted: rgba(255, 255, 255, 0.65);
+    --text-anchor: rgba(255, 255, 255, 0.35);
+    --border-color: rgba(255, 255, 255, 0.08);
+
+    --cursor-ring-color: rgba(255, 255, 255, 0.40);
+    --cursor-ring-bg: rgba(255, 255, 255, 0.02);
+    --cursor-ring-hover-bg: rgba(255, 255, 255, 0.05);
+    --cursor-ring-hover-border: rgba(255, 255, 255, 0.22);
+    --cursor-ring-click-bg: rgba(255, 255, 255, 0.10);
+    --cursor-dot-bg: rgba(255, 255, 255, 0.85);
+
+    --carousel-btn-border: rgba(255, 255, 255, 0.12);
+    --carousel-btn-bg: rgba(255, 255, 255, 0.04);
+    --carousel-btn-color: rgba(255, 255, 255, 0.6);
+    --carousel-btn-hover-bg: rgba(255, 255, 255, 0.08);
+    --carousel-btn-hover-color: #FFFFFF;
+    --carousel-pip-bg: rgba(255, 255, 255, 0.25);
+
+    --phone-frame-border: rgba(255, 255, 255, 0.12);
+    --confession-label-color: rgba(255, 255, 255, 0.82);
+  }
+}
+
+/* Forced light class */
+.theme-light {
+  --bg-color: #FFFDFA;
+  --bg-gradient-accent: #EEEBE6;
+  --radial-1: rgba(244, 241, 236, 0.6);
+  --radial-2: rgba(238, 235, 230, 0.5);
+  --text-color: #1A1A1A;
+  --text-muted: rgba(26, 26, 26, 0.65);
+  --text-anchor: rgba(26, 26, 26, 0.35);
+  --border-color: rgba(26, 26, 26, 0.08);
+
+  --cursor-ring-color: rgba(26, 26, 26, 0.40);
+  --cursor-ring-bg: rgba(26, 26, 26, 0.02);
+  --cursor-ring-hover-bg: rgba(26, 26, 26, 0.05);
+  --cursor-ring-hover-border: rgba(26, 26, 26, 0.22);
+  --cursor-ring-click-bg: rgba(26, 26, 26, 0.10);
+  --cursor-dot-bg: rgba(26, 26, 26, 0.85);
+
+  --carousel-btn-border: rgba(26, 26, 26, 0.08);
+  --carousel-btn-bg: rgba(26, 26, 26, 0.03);
+  --carousel-btn-color: rgba(26, 26, 26, 0.6);
+  --carousel-btn-hover-bg: rgba(26, 26, 26, 0.08);
+  --carousel-btn-hover-color: #1A1A1A;
+  --carousel-pip-bg: rgba(26, 26, 26, 0.15);
+
+  --phone-frame-border: rgba(26, 26, 26, 0.08);
+  --confession-label-color: rgba(26, 26, 26, 0.82);
+}
+
+/* Forced dark class */
+.theme-dark {
+  --bg-color: #08080a;
+  --bg-gradient-accent: #0f0f13;
+  --radial-1: rgba(160, 200, 255, 0.03);
+  --radial-2: rgba(100, 140, 255, 0.01);
+  --text-color: #FFFFFF;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --text-anchor: rgba(255, 255, 255, 0.35);
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --cursor-ring-color: rgba(255, 255, 255, 0.40);
+  --cursor-ring-bg: rgba(255, 255, 255, 0.02);
+  --cursor-ring-hover-bg: rgba(255, 255, 255, 0.05);
+  --cursor-ring-hover-border: rgba(255, 255, 255, 0.22);
+  --cursor-ring-click-bg: rgba(255, 255, 255, 0.10);
+  --cursor-dot-bg: rgba(255, 255, 255, 0.85);
+
+  --carousel-btn-border: rgba(255, 255, 255, 0.12);
+  --carousel-btn-bg: rgba(255, 255, 255, 0.04);
+  --carousel-btn-color: rgba(255, 255, 255, 0.6);
+  --carousel-btn-hover-bg: rgba(255, 255, 255, 0.08);
+  --carousel-btn-hover-color: #FFFFFF;
+  --carousel-pip-bg: rgba(255, 255, 255, 0.25);
+
+  --phone-frame-border: rgba(255, 255, 255, 0.12);
+  --confession-label-color: rgba(255, 255, 255, 0.82);
 }
 
 /* ════════════════════════════════════════
@@ -364,8 +513,9 @@ a   { text-decoration: none; }
    CONFESSION TICKER
    ════════════════════════════════════════ */
 .confession-section {
-  background: linear-gradient(180deg, #FFFDFA 0%, #EEEBE6 50%, #FFFDFA 100%);
+  background: linear-gradient(180deg, var(--bg-color) 0%, var(--bg-gradient-accent) 50%, var(--bg-color) 100%);
   padding: 140px 0 180px;
+  transition: background 0.40s ease;
 }
 
 .confession-label {
@@ -373,8 +523,9 @@ a   { text-decoration: none; }
   font-family: 'Instrument Serif', serif;
   font-size: clamp(32px, 4.5vw, 56px);
   letter-spacing: -0.01em;
-  color: rgba(26, 26, 26, 0.82);
+  color: var(--confession-label-color);
   margin: 0 0 72px;
+  transition: color 0.40s ease;
 }
 
 .ticker-viewport {
@@ -390,8 +541,8 @@ a   { text-decoration: none; }
   pointer-events: none;
   z-index: 2;
 }
-.fade-left  { left: 0;  background: linear-gradient(to right, #FFFDFA, transparent); }
-.fade-right { right: 0; background: linear-gradient(to left,  #FFFDFA, transparent); }
+.fade-left  { left: 0;  background: linear-gradient(to right, var(--bg-color), transparent); transition: background-color 0.40s ease; }
+.fade-right { right: 0; background: linear-gradient(to left,  var(--bg-color), transparent); transition: background-color 0.40s ease; }
 
 .ticker-rows {
   display: flex;
@@ -445,8 +596,9 @@ a   { text-decoration: none; }
   margin: 88px 0 0;
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 36px;
-  color: rgba(26, 26, 26, 0.35);
+  color: var(--text-anchor);
   letter-spacing: -0.02em;
+  transition: color 0.40s ease;
 }
 
 @media (max-width: 768px) {
@@ -462,7 +614,8 @@ a   { text-decoration: none; }
 .how-section {
   position: relative;
   height: 500vh;
-  background: #FFFDFA;
+  background: var(--bg-color);
+  transition: background-color 0.40s ease;
 }
 
 .how-sticky {
@@ -472,9 +625,10 @@ a   { text-decoration: none; }
   width: 100%;
   display: flex;
   align-items: center;
-  background: #FFFDFA;
-  color: #1A1A1A;
+  background: var(--bg-color);
+  color: var(--text-color);
   will-change: background-color, color;
+  transition: background-color 0.40s ease, color 0.40s ease;
 }
 
 .how-layout {
@@ -550,9 +704,10 @@ a   { text-decoration: none; }
   max-width: min(480px, 33.2vh);
   aspect-ratio: 9 / 19.5;
   border-radius: 44px;
-  border: 1.5px solid rgba(26, 26, 26, 0.08);
+  border: 1.5px solid var(--phone-frame-border);
   background: #0A0A0F;
   overflow: hidden;
+  transition: border-color 0.40s ease;
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.05),
     0 40px 80px rgba(0, 0, 0, 0.15),
@@ -884,7 +1039,8 @@ a   { text-decoration: none; }
   font-family: 'Nunito', sans-serif;
   font-size: 1.0625rem;
   line-height: 1.8;
-  color: rgba(26, 26, 26, 0.65);
+  color: var(--text-muted);
+  transition: color 0.40s ease;
 }
 
 .sf-bridge {
@@ -894,7 +1050,8 @@ a   { text-decoration: none; }
   font-family: 'Nunito', sans-serif;
   font-size: 1.0625rem;
   line-height: 1.8;
-  color: rgba(26, 26, 26, 0.65);
+  color: var(--text-muted);
+  transition: color 0.40s ease;
 }
 
 /* ════════════════════════════════════════
@@ -1042,9 +1199,9 @@ a   { text-decoration: none; }
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 1px solid rgba(26, 26, 26, 0.08);
-  background: rgba(26, 26, 26, 0.03);
-  color: rgba(26, 26, 26, 0.6);
+  border: 1px solid var(--carousel-btn-border);
+  background: var(--carousel-btn-bg);
+  color: var(--carousel-btn-color);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
@@ -1057,11 +1214,11 @@ a   { text-decoration: none; }
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease, border-color 0.40s ease;
 }
 .carousel-btn--prev { left: clamp(20px, 7vw, 120px); }
 .carousel-btn--next { right: clamp(20px, 7vw, 120px); }
-.carousel-btn:hover  { background: rgba(26, 26, 26, 0.08); color: #1A1A1A; transform: translateY(-50%) scale(1.07); }
+.carousel-btn:hover  { background: var(--carousel-btn-hover-bg); color: var(--carousel-btn-hover-color); transform: translateY(-50%) scale(1.07); }
 .carousel-btn:active { transform: translateY(-50%) scale(0.95); }
 
 .carousel-pips {
@@ -1078,7 +1235,7 @@ a   { text-decoration: none; }
   height: 6px;
   border-radius: 50%;
   border: none;
-  background: rgba(26, 26, 26, 0.15);
+  background: var(--carousel-pip-bg);
   cursor: pointer;
   padding: 0;
   transition: background 0.35s ease, transform 0.35s ease;
@@ -1162,4 +1319,69 @@ a   { text-decoration: none; }
   .moment { transition: none; }
   .carousel-card, .carousel-glow { transition: none; }
   html { scroll-behavior: auto; }
+}
+
+/* ════════════════════════════════════════
+   THEME SWITCHER
+   ════════════════════════════════════════ */
+.theme-switcher {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 100px;
+  background: rgba(14, 15, 17, 0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    0 8px 24px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.switcher-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.switcher-btn:hover {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.switcher-btn.active {
+  color: #1A1A1A;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .theme-switcher {
+    bottom: 92px; /* Positioned above the bottom dock */
+    right: 16px;
+  }
+}
+
+@supports (bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    .theme-switcher {
+      bottom: calc(92px + env(safe-area-inset-bottom));
+    }
+  }
 }
