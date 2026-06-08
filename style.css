@@ -322,6 +322,8 @@ a   { text-decoration: none; }
     0 8px 24px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: calc(100% - 32px);
+  width: max-content;
 }
 
 .nav-logo {
@@ -516,6 +518,7 @@ a   { text-decoration: none; }
   background: linear-gradient(180deg, var(--bg-color) 0%, var(--bg-gradient-accent) 50%, var(--bg-color) 100%);
   padding: 140px 0 180px;
   transition: background 0.40s ease;
+  overflow-x: hidden; /* Prevent horizontal scroll from 3D carousel elements */
 }
 
 .confession-label {
@@ -774,21 +777,40 @@ a   { text-decoration: none; }
 }
 
 @media (max-width: 900px) {
+  .how-section {
+    height: auto !important;
+    overflow: hidden;
+  }
+
+  .how-sticky {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    padding: 60px 0 80px;
+  }
+
   .how-layout {
     grid-template-columns: 1fr;
     padding: 0 32px;
-    gap: 40px;
+    gap: 32px;
     justify-items: center;
   }
 
   .how-phone {
     order: -1;
     justify-content: center;
+    user-select: none;
+    touch-action: pan-y;
   }
 
   .how-copy {
     height: 240px;
     width: 100%;
+    user-select: none;
+    touch-action: pan-y;
   }
 
   .moment {
@@ -796,6 +818,12 @@ a   { text-decoration: none; }
     right: 0;
     width: 100%;
     max-width: 100%;
+    transition: opacity 0.4s ease, transform 0.4s ease !important;
+    text-align: center;
+  }
+  
+  .moment-body {
+    margin: 0 auto;
   }
 
   .phone-frame {
@@ -804,7 +832,24 @@ a   { text-decoration: none; }
   }
 
   .progress-track {
-    display: none;
+    display: flex !important;
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    flex-direction: row !important;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 10;
+  }
+  
+  .progress-dot {
+    width: 8px;
+    height: 8px;
+    cursor: pointer;
   }
 }
 
@@ -1060,6 +1105,7 @@ a   { text-decoration: none; }
 .carousel-wrap {
   position: relative;
   padding: 72px 0 72px;
+  overflow-x: hidden; /* Prevent horizontal scroll from 3D carousel elements */
 }
 
 .carousel-glow {
@@ -1273,7 +1319,7 @@ a   { text-decoration: none; }
   .nav {
     bottom: 16px;
     padding: 6px 8px 6px 14px;
-    gap: 10px;
+    gap: 8px;
   }
   .logo-full {
     display: none;
@@ -1289,6 +1335,9 @@ a   { text-decoration: none; }
   .btn-nav {
     font-size: 12px;
     padding: 8px 14px;
+  }
+  .nav-link-full, .btn-nav-full {
+    display: none;
   }
 }
 

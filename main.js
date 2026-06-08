@@ -733,6 +733,10 @@ function initHowSection() {
     { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.20] },
   ];
 
+  const isMobile = () => window.innerWidth <= 900;
+  let activeIndex = 0;
+  let lastIsMobile = isMobile();
+
   function lerp(a, b, t) { return a + (b - a) * t; }
 
   function lerpColor(c1, c2, t) {
@@ -781,6 +785,55 @@ function initHowSection() {
     return { opacity, ty };
   }
 
+  function applyMobileState(idx) {
+    const isDark = document.documentElement.classList.contains('theme-dark');
+    const currentStates = isDark ? darkStates : lightStates;
+    const state = currentStates[idx];
+
+    const bg = `rgb(${state.bg[0]},${state.bg[1]},${state.bg[2]})`;
+    const text = `rgb(${state.text[0]},${state.text[1]},${state.text[2]})`;
+    const glow = `rgba(${state.glow[0]},${state.glow[1]},${state.glow[2]},${state.glow[3]})`;
+
+    sticky.style.background = bg;
+    sticky.style.color = text;
+    if (progressTrack) progressTrack.style.color = text;
+    if (phoneFrame) {
+      phoneFrame.style.boxShadow = `0 0 0 1px rgba(0,0,0,0.06),0 40px 80px rgba(0,0,0,0.12),0 0 60px ${glow}`;
+    }
+
+    moments.forEach((el, i) => {
+      const active = i === idx;
+      el.classList.toggle('active', active);
+      if (active) {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+        el.style.pointerEvents = 'auto';
+      } else {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.pointerEvents = 'none';
+      }
+    });
+
+    screens.forEach((el, i) => el.classList.toggle('active', i === idx));
+    dots.forEach((el, i)    => el.classList.toggle('active', i === idx));
+  }
+
+  function resetStyles() {
+    sticky.style.background = '';
+    sticky.style.color = '';
+    if (progressTrack) progressTrack.style.color = '';
+    if (phoneFrame) phoneFrame.style.boxShadow = '';
+    moments.forEach(el => {
+      el.style.opacity = '';
+      el.style.transform = '';
+      el.style.pointerEvents = '';
+      el.classList.remove('active');
+    });
+    screens.forEach(el => el.classList.remove('active'));
+    dots.forEach(el => el.classList.remove('active'));
+  }
+
   if (phoneFrame) {
     const observer = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
@@ -791,7 +844,51 @@ function initHowSection() {
     observer.observe(section);
   }
 
+  // Swipe logic for mobile
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  sticky.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  sticky.addEventListener('touchend', e => {
+    if (!isMobile()) return;
+    const diffX = e.changedTouches[0].clientX - touchStartX;
+    const diffY = e.changedTouches[0].clientY - touchStartY;
+
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        if (activeIndex < NUM - 1) {
+          activeIndex++;
+          applyMobileState(activeIndex);
+        }
+      } else {
+        if (activeIndex > 0) {
+          activeIndex--;
+          applyMobileState(activeIndex);
+        }
+      }
+    }
+  }, { passive: true });
+
+  // Add click support to dots on mobile
+  dots.forEach((dot, idx) => {
+    dot.addEventListener('click', () => {
+      if (isMobile()) {
+        activeIndex = idx;
+        applyMobileState(activeIndex);
+      }
+    });
+  });
+
   function update() {
+    if (isMobile()) {
+      applyMobileState(activeIndex);
+      return;
+    }
+
     const rect      = section.getBoundingClientRect();
     const scrolled  = -rect.top;
     const range     = section.offsetHeight - window.innerHeight;
@@ -822,8 +919,28 @@ function initHowSection() {
   }
 
   update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update, { passive: true });
+  window.addEventListener('scroll', () => {
+    if (isMobile()) {
+      applyMobileState(activeIndex);
+    } else {
+      update();
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', () => {
+    const currentIsMobile = isMobile();
+    if (currentIsMobile !== lastIsMobile) {
+      lastIsMobile = currentIsMobile;
+      resetStyles();
+      if (currentIsMobile) {
+        applyMobileState(activeIndex);
+      } else {
+        update();
+      }
+    } else {
+      update();
+    }
+  }, { passive: true });
 }
 
 // ── Theme System ──────────────────────────────────────────
