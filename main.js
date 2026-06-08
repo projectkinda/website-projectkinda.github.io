@@ -806,11 +806,11 @@ function initHowSection() {
       el.classList.toggle('active', active);
       if (active) {
         el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
+        el.style.transform = 'translateX(0)';
         el.style.pointerEvents = 'auto';
       } else {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
+        el.style.transform = i > idx ? 'translateX(30px)' : 'translateX(-30px)';
         el.style.pointerEvents = 'none';
       }
     });
