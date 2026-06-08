@@ -395,6 +395,10 @@ a   { text-decoration: none; }
     inset 0 0 0 1px #EAE8E2;
 }
 
+.nav-link-full, .btn-nav-full {
+  margin-left: 0.28em;
+}
+
 /* ════════════════════════════════════════
    HERO — video background with gradient overlay
    ════════════════════════════════════════ */
