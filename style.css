@@ -25,7 +25,7 @@
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 
 /* ════════════════════════════════════════
    GRAIN — animated film-grain overlay
@@ -310,7 +310,7 @@ a   { text-decoration: none; }
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
   padding: 8px 12px 8px 20px;
   border-radius: 100px;
   background: rgba(14, 15, 17, 0.80);
@@ -338,12 +338,7 @@ a   { text-decoration: none; }
   display: none;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-wrap: nowrap;
-}
+
 
 .nav-link {
   font-family: 'Nunito', sans-serif;
@@ -833,11 +828,13 @@ a   { text-decoration: none; }
     width: 100%;
     max-width: 100%;
     transition: opacity 0.4s ease, transform 0.4s ease !important;
-    text-align: center;
+    text-align: right;
+    align-items: flex-end;
   }
   
   .moment-body {
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: 0;
   }
 
   .phone-frame {
@@ -1332,7 +1329,7 @@ a   { text-decoration: none; }
 @media (max-width: 600px) {
   .nav {
     bottom: 16px;
-    padding: 6px 8px 6px 14px;
+    padding: 6px 8px 6px 12px;
     gap: 8px;
   }
   .logo-full {
@@ -1352,6 +1349,15 @@ a   { text-decoration: none; }
   }
   .nav-link-full, .btn-nav-full {
     display: none;
+  }
+  .theme-switcher {
+    gap: 1px;
+    padding: 1px;
+  }
+  .switcher-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 9px;
   }
 }
 
@@ -1388,29 +1394,19 @@ a   { text-decoration: none; }
    THEME SWITCHER
    ════════════════════════════════════════ */
 .theme-switcher {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px;
+  gap: 2px;
+  padding: 2px;
   border-radius: 100px;
-  background: rgba(14, 15, 17, 0.80);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.16),
-    0 8px 24px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .switcher-btn {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -1419,7 +1415,7 @@ a   { text-decoration: none; }
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 11px;
   transition: all 0.2s ease;
 }
 
@@ -1431,20 +1427,5 @@ a   { text-decoration: none; }
 .switcher-btn.active {
   color: #1A1A1A;
   background: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-@media (max-width: 768px) {
-  .theme-switcher {
-    bottom: 92px; /* Positioned above the bottom dock */
-    right: 16px;
-  }
-}
-
-@supports (bottom: env(safe-area-inset-bottom)) {
-  @media (max-width: 768px) {
-    .theme-switcher {
-      bottom: calc(92px + env(safe-area-inset-bottom));
-    }
-  }
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
