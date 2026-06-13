@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- Content Security Policy: contains XSS / compromised-CDN blast radius.
+       script-src allows only self, the hashed inline theme script, and the two pinned CDNs. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bl6ocp6DvjQKNkjgZQ4TCtPg0L+2JJlYjDd/+H7EZjw=' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://kinda-waitlist.project-mvp-bluepill.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Kinda — AI that learns how you work</title>
   <meta name="description" content="Kinda is an AI productivity app that learns how you work and helps you actually do the things you keep putting off. Join the waitlist." />
   <meta name="theme-color" content="#0D2535" />
