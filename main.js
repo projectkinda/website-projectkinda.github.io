@@ -649,6 +649,7 @@ function initForm() {
   const emailInput = document.getElementById('email');
   const nameError  = document.getElementById('name-error');
   const emailError = document.getElementById('email-error');
+  const turnstileError = document.getElementById('turnstile-error');
   const submitBtn  = document.getElementById('submit-btn');
   const formWrap   = document.getElementById('form-wrap');
   const confirm    = document.getElementById('confirm');
@@ -676,6 +677,14 @@ function initForm() {
 
     if (!valid) return;
 
+    // Cloudflare Turnstile — token must be present before we contact the Worker
+    const turnstileToken = window.turnstile ? window.turnstile.getResponse() : '';
+    if (!turnstileToken) {
+      if (turnstileError) { turnstileError.textContent = 'Please complete the verification.'; turnstileError.classList.add('visible'); }
+      return;
+    }
+    if (turnstileError) { turnstileError.textContent = ''; turnstileError.classList.remove('visible'); }
+
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
 
@@ -683,7 +692,7 @@ function initForm() {
       const res  = await fetch(WORKER_URL, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name: nameVal, email: emailVal }),
+        body:    JSON.stringify({ name: nameVal, email: emailVal, turnstileToken }),
       });
       const data = await res.json();
 
@@ -700,6 +709,8 @@ function initForm() {
     } finally {
       submitBtn.classList.remove('loading');
       submitBtn.disabled = false;
+      // Each token is single-use — reset so a fresh challenge is required next attempt
+      if (window.turnstile) window.turnstile.reset();
     }
   });
 }

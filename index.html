@@ -6,7 +6,7 @@
 
   <!-- Content Security Policy: contains XSS / compromised-CDN blast radius.
        script-src allows only self, the hashed inline theme script, and the two pinned CDNs. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bl6ocp6DvjQKNkjgZQ4TCtPg0L+2JJlYjDd/+H7EZjw=' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://kinda-waitlist.project-mvp-bluepill.workers.dev; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bl6ocp6DvjQKNkjgZQ4TCtPg0L+2JJlYjDd/+H7EZjw=' https://unpkg.com https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://kinda-waitlist.project-mvp-bluepill.workers.dev https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Kinda — AI that learns how you work</title>
   <meta name="description" content="Kinda is an AI productivity app that learns how you work and helps you actually do the things you keep putting off. Join the waitlist." />
@@ -53,6 +53,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Instrument+Serif:ital@0;1&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.2" integrity="sha384-J7cw2fbG1T4C5MirTVUxsZGaMfw2m0XsCgOQEqUvB1OF9VIsHWuZF1GmyVRzs7eu" crossorigin="anonymous"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -248,6 +249,8 @@
             <input type="email" name="email" id="email" placeholder="Email address" autocomplete="email" aria-label="Email address" />
             <p class="field-error" id="email-error" role="alert" aria-live="polite"></p>
           </div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAADkAEevNY8XvckJk" data-theme="auto"></div>
+          <p class="field-error" id="turnstile-error" role="alert" aria-live="polite"></p>
           <button type="submit" class="btn-waitlist-submit" id="submit-btn">
             <span class="btn-label">Join the waitlist →</span>
             <span class="btn-spinner" aria-hidden="true"></span>
