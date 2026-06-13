@@ -1021,8 +1021,13 @@ a   { text-decoration: none; }
 
 .btn-spinner {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 20px;
   height: 20px;
+  /* Negative-margin centering (not translate) so the spin animation's
+     transform: rotate() doesn't override the centering offset */
+  margin: -10px 0 0 -10px;
   border: 2px solid rgba(26, 26, 26, 0.2);
   border-top-color: #1A1A1A;
   border-radius: 50%;
