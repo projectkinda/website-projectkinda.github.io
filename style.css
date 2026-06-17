@@ -1050,6 +1050,17 @@ a   { text-decoration: none; }
   color: #FFFFFF;
   letter-spacing: -0.02em;
 }
+.confirm-subtext {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 420px;
+}
+.confirm-subtext strong {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
