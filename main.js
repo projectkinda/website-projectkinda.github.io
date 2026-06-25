@@ -1222,26 +1222,56 @@ function initBackgroundVideoRotation() {
   const videos = document.querySelectorAll('.global-video-bg video.bg-video');
   if (videos.length < 2) return;
 
-  // Make sure all videos are playing
-  videos.forEach(v => {
-    v.play().catch(err => console.log("Video autoplay blocked or failed:", err));
-  });
+  // Play only the active (first) video initially to optimize page load speed
+  const firstVideo = videos[0];
+  if (firstVideo) {
+    firstVideo.play().catch(err => console.log("Video autoplay blocked or failed:", err));
+  }
 
   let currentIndex = 0;
   const transitionInterval = 15000; // Rotate every 15 seconds
+  const preloadDelay = 4000; // Preload next video 4 seconds before transition
+
+  // Helper to load and play a video if it's paused
+  function prepareVideo(video) {
+    if (video.paused) {
+      video.setAttribute('preload', 'auto');
+      video.play().catch(err => console.log("Video play failed:", err));
+    }
+  }
+
+  // Preload and play the next video in advance
+  let preloadTimeout = setTimeout(() => {
+    const nextIndex = (currentIndex + 1) % videos.length;
+    prepareVideo(videos[nextIndex]);
+  }, transitionInterval - preloadDelay);
 
   setInterval(() => {
     const currentVideo = videos[currentIndex];
     currentIndex = (currentIndex + 1) % videos.length;
     const nextVideo = videos[currentIndex];
 
-    // Cross-fade: set next active, remove active from current
+    // Ensure next video is playing before we transition
+    prepareVideo(nextVideo);
+
+    // Cross-fade: set next active
     nextVideo.classList.add('active');
     
-    // Give it a tiny delay to start fading out current, ensuring overlap
+    // Fade out current video, then pause it to save system resources
     setTimeout(() => {
       currentVideo.classList.remove('active');
-    }, 100);
+      if (currentVideo !== nextVideo) {
+        currentVideo.pause();
+      }
+    }, 3100); // 3.1s delay ensures the 3s CSS transition has fully completed
+
+    // Schedule preloading for the next cycle
+    clearTimeout(preloadTimeout);
+    preloadTimeout = setTimeout(() => {
+      const nextIndex = (currentIndex + 1) % videos.length;
+      prepareVideo(videos[nextIndex]);
+    }, transitionInterval - preloadDelay);
+
   }, transitionInterval);
 }
 
