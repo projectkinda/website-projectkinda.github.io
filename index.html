@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-dark js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <!-- Content Security Policy: contains XSS / compromised-CDN blast radius.
-       script-src allows only self, the hashed inline theme script, and the two pinned CDNs. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bl6ocp6DvjQKNkjgZQ4TCtPg0L+2JJlYjDd/+H7EZjw=' https://unpkg.com https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://kinda-waitlist.project-mvp-bluepill.workers.dev https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
+       script-src allows only self and the pinned CDNs. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://kinda-waitlist.project-mvp-bluepill.workers.dev https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>Kinda — AI that learns how you work</title>
   <meta name="description" content="Kinda is an AI productivity app that learns how you work and helps you actually do the things you keep putting off. Join the waitlist." />
@@ -36,22 +36,11 @@
     "name": "Kinda"
   }
   </script>
-
-  <script>
-    document.documentElement.classList.add('js');
-    (function() {
-      const theme = localStorage.getItem('theme') || 'system';
-      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('theme-dark');
-      } else {
-        document.documentElement.classList.add('theme-light');
-      }
-    })();
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Instrument+Serif:ital@0;1&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.2" integrity="sha384-J7cw2fbG1T4C5MirTVUxsZGaMfw2m0XsCgOQEqUvB1OF9VIsHWuZF1GmyVRzs7eu" crossorigin="anonymous"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <!-- Vercel Web Analytics (served same-origin from /_vercel/insights/) -->
@@ -65,6 +54,22 @@
   <!-- Custom cursor (pointer-fine only) -->
   <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
   <div class="cursor-dot"  id="cursor-dot"  aria-hidden="true"></div>
+  <!-- Global background video -->
+  <div class="global-video-bg" aria-hidden="true">
+    <video class="bg-video active" autoplay loop muted playsinline preload="auto">
+      <source src="videos/gradient-flow.mp4" type="video/mp4" />
+    </video>
+    <video class="bg-video" autoplay loop muted playsinline preload="auto">
+      <source src="videos/cosmic-drifting.mp4" type="video/mp4" />
+    </video>
+    <video class="bg-video" autoplay loop muted playsinline preload="auto">
+      <source src="videos/cosmic-cyan.mp4" type="video/mp4" />
+    </video>
+    <video class="bg-video" autoplay loop muted playsinline preload="auto">
+      <source src="videos/planet-floating.mp4" type="video/mp4" />
+    </video>
+  </div>
+
 
   <!-- NAV -->
   <nav class="nav" id="nav">
@@ -74,19 +79,6 @@
     </a>
     <a href="#features" class="nav-link scroll-to" data-target="features">Features</a>
     <a href="#how" class="nav-link scroll-to" data-target="how">How<span class="nav-link-full">it works</span></a>
-    
-    <!-- THEME SWITCHER -->
-    <div class="theme-switcher" id="theme-switcher" aria-label="Theme Customization">
-      <button class="switcher-btn" data-theme="light" aria-label="Light mode">
-        <i class="ph-bold ph-sun"></i>
-      </button>
-      <button class="switcher-btn" data-theme="dark" aria-label="Dark mode">
-        <i class="ph-bold ph-moon"></i>
-      </button>
-      <button class="switcher-btn" data-theme="system" aria-label="System default">
-        <i class="ph-bold ph-desktop"></i>
-      </button>
-    </div>
 
     <a href="#waitlist" class="btn-nav scroll-to" data-target="waitlist">Join<span class="btn-nav-full">the waitlist</span></a>
   </nav>
@@ -94,143 +86,718 @@
   <!-- HERO -->
   <section class="hero" id="hero">
 
-    <!-- Background video loop -->
-    <div class="hero-video-bg" aria-hidden="true">
-      <video class="hero-vid active" autoplay loop muted playsinline preload="auto">
-        <source src="videos/slow-breeze.mp4" type="video/mp4" />
-      </video>
-      <video class="hero-vid" muted playsinline preload="metadata">
-        <source src="videos/character.mp4" type="video/mp4" />
-      </video>
-      <video class="hero-vid" muted playsinline preload="metadata">
-        <source src="videos/screens-breeze.mp4" type="video/mp4" />
-      </video>
-    </div>
-
-    <canvas class="hero-glow-canvas" aria-hidden="true"></canvas>
-
-    <div class="hero-inner">
+    <div class="hero-inner container">
       <h1 class="hero-headline">
-        Not every mind works the same.<br>Kinda gets yours.
+        Not every mind<br>works the same.<br>Kinda gets yours.
       </h1>
       <p class="hero-sub">
-        Most apps treat procrastination like a task problem.<br>
-        Kinda treats it like the psychology problem it actually is.<br>
-        It learns your specific pattern — then works with it, not against it.
+        Most apps treat procrastination like a task problem. Kinda treats it like the psychology problem it actually is. It learns your specific pattern — then works with it, not against it.
       </p>
-      <a href="#waitlist" class="btn-hero scroll-to" data-target="waitlist">
-        Join the waitlist →
+      
+      <div class="hero-badges">
+        <a href="#waitlist" class="store-badge -appstore scroll-to" data-target="waitlist">
+          <svg class="badge-icon" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.5-.63.73-1.18 1.87-1.03 2.97 1.12.09 2.27-.57 2.98-1.41z"></path>
+          </svg>
+          <div class="badge-text">
+            <span class="badge-sub">DOWNLOAD IN THE</span>
+            <span class="badge-main">App Store</span>
+          </div>
+        </a>
+        <a href="#waitlist" class="store-badge -googleplay scroll-to" data-target="waitlist">
+          <svg class="badge-icon" viewBox="0 0 256 256" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.5 12.3c-.6.6-1 1.6-1 2.8v225.8c0 1.2.4 2.2 1 2.8l1.3 1.3L151 117.7V114L23.8 11l-1.3 1.3z" fill="#00C3FF"></path>
+            <path d="M192.1 63.8L151 104.9v9.1l41.1 41.1 49.4-28.2c4.4-2.5 4.4-6.6 0-9.1l-49.4-28.2v.9z" fill="#FFE000"></path>
+            <path d="M151 114L23.8 11C28.2 8.5 34.3 8.7 38.7 11.2l153.4 87.7-41.1 41.1v-26z" fill="#00E676"></path>
+            <path d="M151 117.7l-41.1 41.1L38.7 244.8c4.4 2.5 10.5 2.3 14.9-.2l138.5-79.1-41.1-47.8z" fill="#FF334B"></path>
+          </svg>
+          <div class="badge-text">
+            <span class="badge-sub">DOWNLOAD ON</span>
+            <span class="badge-main">Google Play</span>
+          </div>
+        </a>
+      </div>
+
+      <a href="#features" class="hero-scroll-indicator scroll-to" data-target="features">
+        <span class="indicator-text">Scroll <span class="indicator-accent">down</span></span>
+        <span class="celestial-gravity-line">
+          <span class="falling-star"></span>
+        </span>
       </a>
-      <p class="hero-note">Early access — limited spots</p>
     </div>
   </section>
 
-  <!-- CONFESSION TICKER -->
+  <!-- CONFESSION SECTION (Scrollytelling Card Deck) -->
   <section class="confession-section" id="features">
-    <p class="confession-label">Sound familiar?</p>
+    <div class="confession-sticky-wrap">
 
-    <div class="ticker-viewport">
-      <div class="fade-left"></div>
-      <div class="fade-right"></div>
+      <p class="confession-label">Sound familiar?</p>
+      
+      <p class="scroll-highlight-text" id="scroll-text">The gap between deciding and doing. That's where most days disappear. You're someone who follows through — Kinda just helps you close it.</p>
+      
+      <div class="confession-deck-container">
+        <ul class="confession-deck">
+          
+          <!-- Card 1 -->
+          <li class="confession-card -c1">
+            <div class="confession-card_badge">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="confession-card_img-wrap">
+              <img src="screens/confession-1.webp" alt="Inbox risograph" loading="eager" />
+            </div>
+            <div class="confession-card_text">
+              <span class="confession-card_tag">THE INBOX</span>
+              <h4 class="confession-card_quote">"The reply you keep dodging"</h4>
+            </div>
+          </li>
 
-      <div class="ticker-rows">
-        <div class="ticker-overflow">
-          <div class="ticker-track row-1" id="ticker-row-1"></div>
-        </div>
-        <div class="ticker-overflow">
-          <div class="ticker-track row-2" id="ticker-row-2"></div>
-        </div>
-        <div class="ticker-overflow">
-          <div class="ticker-track row-3" id="ticker-row-3"></div>
-        </div>
+          <!-- Card 2 -->
+          <li class="confession-card -c2">
+            <div class="confession-card_badge">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="confession-card_img-wrap">
+              <img src="screens/confession-2.webp" alt="Paperwork risograph" loading="eager" />
+            </div>
+            <div class="confession-card_text">
+              <span class="confession-card_tag">PAPERWORK</span>
+              <h4 class="confession-card_quote">"The form half-filled for weeks"</h4>
+            </div>
+          </li>
+
+          <!-- Card 3 -->
+          <li class="confession-card -c3">
+            <div class="confession-card_badge">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="confession-card_img-wrap">
+              <img src="screens/confession-3.webp" alt="The Call risograph" loading="eager" />
+            </div>
+            <div class="confession-card_text">
+              <span class="confession-card_tag">THE CALL</span>
+              <h4 class="confession-card_quote">"The one you never make"</h4>
+            </div>
+          </li>
+
+          <!-- Card 4 -->
+          <li class="confession-card -c4">
+            <div class="confession-card_badge">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="confession-card_img-wrap">
+              <img src="screens/confession-4.webp" alt="Side Project risograph" loading="eager" />
+            </div>
+            <div class="confession-card_text">
+              <span class="confession-card_tag">SIDE PROJECT</span>
+              <h4 class="confession-card_quote">"The draft you can't leave alone"</h4>
+            </div>
+          </li>
+
+          <!-- Card 5 -->
+          <li class="confession-card -c5">
+            <div class="confession-card_badge">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="confession-card_img-wrap">
+              <img src="screens/confession-5.webp" alt="Home risograph" loading="eager" />
+            </div>
+            <div class="confession-card_text">
+              <span class="confession-card_tag">HOME</span>
+              <h4 class="confession-card_quote">"The pile you walk past"</h4>
+            </div>
+          </li>
+
+        </ul>
       </div>
     </div>
-
-    <p class="sf-intro">
-      Most productivity tools treat you like a to-do list. But the reason
-      you're not getting things done isn't a missing feature — it's a pattern.
-      There are six of them.
-    </p>
-
-    <div class="carousel-wrap">
-      <div class="carousel-glow" id="carousel-glow"></div>
-      <div class="carousel-stage">
-        <button class="carousel-btn carousel-btn--prev" id="carousel-prev" aria-label="Previous card">
-          <i class="ti ti-arrow-left"></i>
-        </button>
-        <div class="carousel-scene" id="carousel-scene">
-          <div class="carousel-rotor" id="carousel-rotor"></div>
-        </div>
-        <button class="carousel-btn carousel-btn--next" id="carousel-next" aria-label="Next card">
-          <i class="ti ti-arrow-right"></i>
-        </button>
-      </div>
-      <div class="carousel-pips" id="carousel-pips" role="tablist" aria-label="Failure mode cards"></div>
-    </div>
-
-    <p class="sf-bridge">
-      Kinda starts by figuring out which one is yours. Then everything — how it
-      talks to you, how it breaks down your work, how it nudges you — adapts to that.
-    </p>
-
-    <p class="anchor-line">Kinda figures out which one you are.</p>
   </section>
 
-  <!-- HOW IT WORKS — Scroll-driven moments -->
-  <section class="how-section" id="how">
-    <div class="how-sticky">
-      <div class="how-layout">
+  <!-- HOW IT WORKS — Timeline Stories -->
+  <section class="how-timeline-section" id="how">
 
-        <div class="how-copy">
-          <div class="moment" data-moment="0">
-            <p class="moment-eyebrow">Step 1</p>
-            <h2 class="moment-headline">Your day,<br>at a glance.</h2>
-            <p class="moment-body">Kinda learns your rhythm and greets you with exactly what matters — no noise, no overwhelm. Just a clear picture of your day.</p>
+
+    <div class="timeline-intro-wrap">
+      <p class="moment-eyebrow" data-anime="fade-up" data-anime-delay="0">How it works</p>
+      <h2 class="timeline-intro-headline" data-anime="fade-up" data-anime-delay="80">Designed for real minds.</h2>
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-rows-container">
+        
+        <!-- Step 1: Card Left, Illustration Right -->
+        <div class="timeline-row">
+          <div class="how-col-card">
+            <div class="c-tile-animated step-card" style="--color-bg: var(--color-red, #ff705d)">
+              <div class="c-tile-animated_bg -colored"></div>
+              <div class="c-tile-animated_bg -white"></div>
+              <div class="c-tile-animated_inner">
+                <div class="step-eyebrow-pill">Daily Rhythm ®</div>
+                <h3 class="c-tile-animated_title">Your day, at a glance.</h3>
+                <p class="c-tile-animated_description">
+                  Kinda learns your rhythm and greets you with exactly what matters — no noise, no overwhelm. Just a clear picture of your day.
+                </p>
+
+              </div>
+            </div>
           </div>
-          <div class="moment" data-moment="1">
-            <p class="moment-eyebrow">Step 2</p>
-            <h2 class="moment-headline">Add it<br>your way.</h2>
-            <p class="moment-body">Voice note, quick type, or paste a link. Kinda captures whatever's on your mind the moment it hits — no format required.</p>
-          </div>
-          <div class="moment" data-moment="2">
-            <p class="moment-eyebrow">Step 3</p>
-            <h2 class="moment-headline">AI plans<br>the path.</h2>
-            <p class="moment-body">Kinda breaks your task into one clear first step. Starting never feels overwhelming when the AI has already done the thinking.</p>
-          </div>
-          <div class="moment" data-moment="3">
-            <p class="moment-eyebrow">Step 4</p>
-            <h2 class="moment-headline">Keep the<br>momentum.</h2>
-            <p class="moment-body">Check it off and Kinda queues up the next step. Each small win builds toward getting things done — for real this time.</p>
+          <div class="how-col-illustration">
+            <div class="c-illustration-card" style="--blob-color: rgba(255, 112, 93, 0.15)">
+              <div class="c-illustration-blob"></div>
+              <img class="c-illustration-char" src="screens/Your day at a glance.png" alt="Your day at a glance" />
+            </div>
           </div>
         </div>
 
-        <div class="how-phone">
-          <div class="phone-frame" id="how-phone-frame">
-            <img class="phone-screen" data-moment="0" src="screens/Home with greeting new.png" alt="Kinda home screen" loading="lazy" />
-            <img class="phone-screen" data-moment="1" src="screens/Manual Task.png" alt="Add a task" loading="lazy" />
-            <img class="phone-screen" data-moment="2" src="screens/AI Suggestion.png" alt="AI task breakdown" loading="lazy" />
-            <img class="phone-screen" data-moment="3" src="screens/Subtask End.png" alt="Task complete" loading="lazy" />
+        <!-- Step 2: Illustration Left, Card Right -->
+        <div class="timeline-row">
+          <div class="how-col-illustration">
+            <div class="c-illustration-card" style="--blob-color: rgba(245, 226, 17, 0.15)">
+              <div class="c-illustration-blob"></div>
+              <img class="c-illustration-char" src="screens/Add it your way.png" alt="Add it your way" />
+            </div>
+          </div>
+          <div class="how-col-card">
+            <div class="c-tile-animated step-card" style="--color-bg: var(--color-yellow, #f5e211)">
+              <div class="c-tile-animated_bg -colored"></div>
+              <div class="c-tile-animated_bg -white"></div>
+              <div class="c-tile-animated_inner">
+                <div class="step-eyebrow-pill">Instant Capture ®</div>
+                <h3 class="c-tile-animated_title">Add it your way.</h3>
+                <p class="c-tile-animated_description">
+                  Voice note, quick type, or paste a link. Kinda captures whatever's on your mind the moment it hits — no format required.
+                </p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Card Left, Illustration Right -->
+        <div class="timeline-row">
+          <div class="how-col-card">
+            <div class="c-tile-animated step-card" style="--color-bg: var(--color-blue, #2ba0ff)">
+              <div class="c-tile-animated_bg -colored"></div>
+              <div class="c-tile-animated_bg -white"></div>
+              <div class="c-tile-animated_inner">
+                <div class="step-eyebrow-pill">AI Co-pilot ®</div>
+                <h3 class="c-tile-animated_title">AI plans the path.</h3>
+                <p class="c-tile-animated_description">
+                  Kinda breaks your task into one clear first step. Starting never feels overwhelming when the AI has already done the thinking.
+                </p>
+
+              </div>
+            </div>
+          </div>
+          <div class="how-col-illustration">
+            <div class="c-illustration-card" style="--blob-color: rgba(43, 160, 255, 0.15)">
+              <div class="c-illustration-blob"></div>
+              <img class="c-illustration-char" src="screens/AI plans the path.png" alt="AI plans the path" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Illustration Left, Card Right -->
+        <div class="timeline-row">
+          <div class="how-col-illustration">
+            <div class="c-illustration-card" style="--blob-color: rgba(235, 193, 255, 0.15)">
+              <div class="c-illustration-blob"></div>
+              <img class="c-illustration-char" src="screens/Keep the momentum.png" alt="Keep the momentum" />
+            </div>
+          </div>
+          <div class="how-col-card">
+            <div class="c-tile-animated step-card" style="--color-bg: var(--color-pink, #ebc1ff)">
+              <div class="c-tile-animated_bg -colored"></div>
+              <div class="c-tile-animated_bg -white"></div>
+              <div class="c-tile-animated_inner">
+                <div class="step-eyebrow-pill">Momentum ®</div>
+                <h3 class="c-tile-animated_title">Keep the momentum.</h3>
+                <p class="c-tile-animated_description">
+                  Check it off and Kinda queues up the next step. Each small win builds toward getting things done — for real this time.
+                </p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: Card Left, Illustration Right -->
+        <div class="timeline-row">
+          <div class="how-col-card">
+            <div class="c-tile-animated step-card" style="--color-bg: var(--color-green, #39e09b)">
+              <div class="c-tile-animated_bg -colored"></div>
+              <div class="c-tile-animated_bg -white"></div>
+              <div class="c-tile-animated_inner">
+                <div class="step-eyebrow-pill">Self-Compassion ®</div>
+                <h3 class="c-tile-animated_title">Celebrate your wins.</h3>
+                <p class="c-tile-animated_description">
+                  Kinda reminds you to pause and appreciate your progress—building self-compassion instead of psychological pressure.
+                </p>
+
+              </div>
+            </div>
+          </div>
+          <div class="how-col-illustration">
+            <div class="c-illustration-card" style="--blob-color: rgba(57, 224, 155, 0.15)">
+              <div class="c-illustration-blob"></div>
+              <img class="c-illustration-char" src="screens/Celebrate your wins.png" alt="Celebrate your wins" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6: Illustration Left, Card Right -->
+        <div class="timeline-row">
+          <div class="how-col-illustration">
+            <div class="c-illustration-card" style="--blob-color: rgba(255, 159, 67, 0.15)">
+              <div class="c-illustration-blob"></div>
+              <img class="c-illustration-char" src="screens/Reflect and grow.png" alt="Reflect and grow" />
+            </div>
+          </div>
+          <div class="how-col-card">
+            <div class="c-tile-animated step-card" style="--color-bg: var(--color-orange, #ff9f43)">
+              <div class="c-tile-animated_bg -colored"></div>
+              <div class="c-tile-animated_bg -white"></div>
+              <div class="c-tile-animated_inner">
+                <div class="step-eyebrow-pill">Weekly Insights ®</div>
+                <h3 class="c-tile-animated_title">Reflect and grow.</h3>
+                <p class="c-tile-animated_description">
+                  Review simple weekly insights to see when your mind is naturally focused and when it needs restorative rest.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
       </div>
+    </div>
+  </section>
 
-      <div class="progress-track" id="how-progress" aria-hidden="true">
-        <div class="progress-dot" data-moment="0"></div>
-        <div class="progress-dot" data-moment="1"></div>
-        <div class="progress-dot" data-moment="2"></div>
-        <div class="progress-dot" data-moment="3"></div>
+  <!-- MILESTONES COLLECTIBLES CAROUSEL -->
+  <section class="collectables-section" id="milestones">
+    <div class="container">
+      <div class="collectables-intro" data-anime="fade-up">
+        <p class="collectables-eyebrow">Milestones</p>
+        <h2 class="collectables-title">Unlock precious Milestones</h2>
+        <p class="collectables-description">Build habits, maintain focus, and collect unique cosmic planets along your journey.</p>
+      </div>
+    </div>
+
+    <div class="collectables-marquee-container">
+      <!-- Row 1: Left to Right -->
+      <div class="collectables-marquee">
+        <div class="collectables-track">
+          <!-- Set 1 -->
+          <!-- Card 1: Zenith -->
+          <div class="collectable-card -zenith">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-1.webp" alt="Zenith Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Zenith Planet</h3>
+            </div>
+          </div>
+          <!-- Card 2: Astra -->
+          <div class="collectable-card -astra">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-2.webp" alt="Astra Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Astra Planet</h3>
+            </div>
+          </div>
+          <!-- Card 3: Nebula -->
+          <div class="collectable-card -nebula">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-3.webp" alt="Nebula Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Nebula Planet</h3>
+            </div>
+          </div>
+          <!-- Card 4: Solis -->
+          <div class="collectable-card -solis">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-4.webp" alt="Solis Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Solis Planet</h3>
+            </div>
+          </div>
+          <!-- Card 5: Aurora -->
+          <div class="collectable-card -aurora">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-5.webp" alt="Aurora Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Aurora Planet</h3>
+            </div>
+          </div>
+
+          <!-- Set 2 -->
+          <!-- Card 1: Zenith -->
+          <div class="collectable-card -zenith">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-1.webp" alt="Zenith Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Zenith Planet</h3>
+            </div>
+          </div>
+          <!-- Card 2: Astra -->
+          <div class="collectable-card -astra">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-2.webp" alt="Astra Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Astra Planet</h3>
+            </div>
+          </div>
+          <!-- Card 3: Nebula -->
+          <div class="collectable-card -nebula">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-3.webp" alt="Nebula Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Nebula Planet</h3>
+            </div>
+          </div>
+          <!-- Card 4: Solis -->
+          <div class="collectable-card -solis">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-4.webp" alt="Solis Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Solis Planet</h3>
+            </div>
+          </div>
+          <!-- Card 5: Aurora -->
+          <div class="collectable-card -aurora">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-5.webp" alt="Aurora Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Aurora Planet</h3>
+            </div>
+          </div>
+
+          <!-- Set 3 -->
+          <!-- Card 1: Zenith -->
+          <div class="collectable-card -zenith">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-1.webp" alt="Zenith Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Zenith Planet</h3>
+            </div>
+          </div>
+          <!-- Card 2: Astra -->
+          <div class="collectable-card -astra">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-2.webp" alt="Astra Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Astra Planet</h3>
+            </div>
+          </div>
+          <!-- Card 3: Nebula -->
+          <div class="collectable-card -nebula">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-3.webp" alt="Nebula Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Nebula Planet</h3>
+            </div>
+          </div>
+          <!-- Card 4: Solis -->
+          <div class="collectable-card -solis">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-4.webp" alt="Solis Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Solis Planet</h3>
+            </div>
+          </div>
+          <!-- Card 5: Aurora -->
+          <div class="collectable-card -aurora">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-5.webp" alt="Aurora Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Aurora Planet</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Right to Left (Reverse) -->
+      <div class="collectables-marquee">
+        <div class="collectables-track -reverse">
+          <!-- Set 1 -->
+          <!-- Card 4: Solis -->
+          <div class="collectable-card -solis">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-4.webp" alt="Solis Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Solis Planet</h3>
+            </div>
+          </div>
+          <!-- Card 5: Aurora -->
+          <div class="collectable-card -aurora">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-5.webp" alt="Aurora Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Aurora Planet</h3>
+            </div>
+          </div>
+          <!-- Card 1: Zenith -->
+          <div class="collectable-card -zenith">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-1.webp" alt="Zenith Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Zenith Planet</h3>
+            </div>
+          </div>
+          <!-- Card 2: Astra -->
+          <div class="collectable-card -astra">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-2.webp" alt="Astra Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Astra Planet</h3>
+            </div>
+          </div>
+          <!-- Card 3: Nebula -->
+          <div class="collectable-card -nebula">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-3.webp" alt="Nebula Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Nebula Planet</h3>
+            </div>
+          </div>
+
+          <!-- Set 2 -->
+          <!-- Card 4: Solis -->
+          <div class="collectable-card -solis">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-4.webp" alt="Solis Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Solis Planet</h3>
+            </div>
+          </div>
+          <!-- Card 5: Aurora -->
+          <div class="collectable-card -aurora">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-5.webp" alt="Aurora Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Aurora Planet</h3>
+            </div>
+          </div>
+          <!-- Card 1: Zenith -->
+          <div class="collectable-card -zenith">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-1.webp" alt="Zenith Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Zenith Planet</h3>
+            </div>
+          </div>
+          <!-- Card 2: Astra -->
+          <div class="collectable-card -astra">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-2.webp" alt="Astra Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Astra Planet</h3>
+            </div>
+          </div>
+          <!-- Card 3: Nebula -->
+          <div class="collectable-card -nebula">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-3.webp" alt="Nebula Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Nebula Planet</h3>
+            </div>
+          </div>
+
+          <!-- Set 3 -->
+          <!-- Card 4: Solis -->
+          <div class="collectable-card -solis">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-4.webp" alt="Solis Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Solis Planet</h3>
+            </div>
+          </div>
+          <!-- Card 5: Aurora -->
+          <div class="collectable-card -aurora">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-5.webp" alt="Aurora Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Aurora Planet</h3>
+            </div>
+          </div>
+          <!-- Card 1: Zenith -->
+          <div class="collectable-card -zenith">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-1.webp" alt="Zenith Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Zenith Planet</h3>
+            </div>
+          </div>
+          <!-- Card 2: Astra -->
+          <div class="collectable-card -astra">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-2.webp" alt="Astra Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Astra Planet</h3>
+            </div>
+          </div>
+          <!-- Card 3: Nebula -->
+          <div class="collectable-card -nebula">
+            <div class="collectable-visual">
+              <div class="collectable-glow"></div>
+              <img class="collectable-planet-img" src="images/planet-3.webp" alt="Nebula Planet" />
+              <div class="collectable-stand"></div>
+            </div>
+            <div class="collectable-info">
+              <h3 class="collectable-title">Nebula Planet</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATISTICS — c-numbers-stack -->
+  <section class="c-numbers-stack" id="stats">
+    <div class="container">
+      <div class="c-numbers-stack_grid">
+        <div class="c-numbers-stack_content">
+          <div class="c-numbers-stack_content_sticky">
+            <h2 class="c-numbers-stack_title">Research behind the app</h2>
+            <p class="c-numbers-stack_text">
+              These numbers are more than just milestones. They represent the strength of our design, the depth of behavioral research, and the real-world focus we help build for you.
+            </p>
+          </div>
+        </div>
+
+        <div class="c-numbers-stack_list">
+          <!-- Stat Card 1 -->
+          <div class="c-numbers-stack_list_item" style="--index: 1" data-scroll data-scroll-css-progress data-scroll-offset="0%, 45%">
+            <div class="c-numbers-stack_card -blue">
+              <p class="c-numbers-stack_card_stat">25+</p>
+              <p class="c-numbers-stack_card_description">
+                The specific cognitive biases that make starting feel harder than it is — each one identified, each one designed around.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stat Card 2 -->
+          <div class="c-numbers-stack_list_item" style="--index: 2" data-scroll data-scroll-css-progress data-scroll-offset="0%, 45%">
+            <div class="c-numbers-stack_card -green">
+              <p class="c-numbers-stack_card_stat">10</p>
+              <p class="c-numbers-stack_card_description">
+                Behavioural design principles that decide whether you act or avoid — the same science used to reshape how millions make choices.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stat Card 3 -->
+          <div class="c-numbers-stack_list_item" style="--index: 3" data-scroll data-scroll-css-progress data-scroll-offset="0%, 45%">
+            <div class="c-numbers-stack_card -red-accent">
+              <p class="c-numbers-stack_card_stat">40+ years</p>
+              <p class="c-numbers-stack_card_description">
+                Of Nobel-recognised decision research, distilled into a system that works with how your mind already operates — not against it.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- WAITLIST -->
   <section class="waitlist" id="waitlist">
-    <div class="waitlist-video-bg" aria-hidden="true">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="videos/waitlist-breeze.mp4" type="video/mp4" />
-      </video>
-    </div>
+
     <div class="waitlist-inner">
       <p class="waitlist-eyebrow" data-anime="fade-up" data-anime-delay="0">Early Access</p>
       <h2 class="waitlist-headline" data-anime="fade-up" data-anime-delay="80">Founding member access.</h2>

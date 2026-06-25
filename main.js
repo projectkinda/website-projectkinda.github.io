@@ -2,14 +2,7 @@
    KINDA — Main JS  ·  anime.js v3 powered
    ============================================================ */
 
-// ── Nav scroll state ───────────────────────────────────────
-function updateNavState() {
-  const nav  = document.getElementById('nav');
-  const hero = document.getElementById('hero');
-  if (!nav) return;
-  const threshold = hero ? hero.offsetHeight * 0.6 : window.innerHeight * 0.6;
-  nav.classList.toggle('scrolled', window.scrollY > threshold);
-}
+
 
 // ── Smooth scroll ─────────────────────────────────────────
 function initSmoothScroll() {
@@ -17,7 +10,14 @@ function initSmoothScroll() {
     el.addEventListener('click', e => {
       const id = el.dataset.target || el.getAttribute('href')?.replace('#', '');
       const target = id && document.getElementById(id);
-      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      if (target) {
+        e.preventDefault();
+        if (window.lenis) {
+          window.lenis.scrollTo(target);
+        } else {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
     });
   });
 }
@@ -43,15 +43,15 @@ function splitLetters(el) {
 function initHeroAnimation() {
   const headline = document.querySelector('.hero-headline');
   const sub      = document.querySelector('.hero-sub');
-  const btn      = document.querySelector('.btn-hero');
-  const note     = document.querySelector('.hero-note');
+  const badges   = document.querySelector('.hero-badges');
+  const scroll   = document.querySelector('.hero-scroll-indicator');
   if (!headline) return;
 
   const chars = splitLetters(headline);
   anime.set(chars, { scaleY: 0, opacity: 0 });
   headline.style.opacity = '1';
 
-  anime.set([sub, btn, note].filter(Boolean), { opacity: 0, translateY: 24 });
+  anime.set([sub, badges, scroll].filter(Boolean), { opacity: 0, translateY: 24 });
 
   anime.timeline({ easing: 'easeOutExpo' })
     .add({
@@ -68,14 +68,15 @@ function initHeroAnimation() {
       duration: 720,
     }, '-=520')
     .add({
-      targets: btn,
+      targets: badges,
       opacity: [0, 1],
       translateY: [16, 0],
       duration: 600,
     }, '-=460')
     .add({
-      targets: note,
+      targets: scroll,
       opacity: [0, 1],
+      translateY: [16, 0],
       duration: 500,
     }, '-=380');
 }
@@ -557,44 +558,153 @@ function initCarousel() {
   startAutoPlay();
 }
 
-// ── Confession Wall ───────────────────────────────────────
-const confessionRows = [
-  [
-    { text: "I'll start once I clean my desk.",                          icon: 'ti ti-home',           style: 'chip-bone'  },
-    { text: "I work better under pressure anyway.",                      icon: 'ti ti-bolt',           style: 'chip-sage'  },
-    { text: "I need a proper system before I can begin.",                icon: 'ti ti-list',           style: 'chip-warm'  },
-    { text: "Tomorrow is basically today.",                              icon: 'ti ti-calendar',       style: 'chip-blush' },
-    { text: "I just need to find the right app first.",                  icon: 'ti ti-apps',           style: 'chip-mint'  },
-    { text: "Once this week is over I'll have more time.",               icon: 'ti ti-clock',          style: 'chip-bone'  },
-    { text: "I perform well under deadlines. This is strategy.",         icon: 'ti ti-trophy',         style: 'chip-sage'  },
-  ],
-  [
-    { text: "I need to be in the right headspace.",                      icon: 'ti ti-brain',          style: 'chip-mint'  },
-    { text: "Let me just check my email first.",                         icon: 'ti ti-mail',           style: 'chip-warm'  },
-    { text: "I'll batch it all together this weekend.",                  icon: 'ti ti-stack',          style: 'chip-blush' },
-    { text: "I just need one good uninterrupted hour.",                  icon: 'ti ti-hourglass',      style: 'chip-bone'  },
-    { text: "I've thought about it so much it practically feels done.",  icon: 'ti ti-check',          style: 'chip-mint'  },
-    { text: "I work best at night. I'll do it tonight.",                 icon: 'ti ti-moon',           style: 'chip-sage'  },
-  ],
-  [
-    { text: "I'm not procrastinating, I'm planning.",                    icon: 'ti ti-chart-bar',      style: 'chip-blush' },
-    { text: "I just need to finish this one other thing first.",         icon: 'ti ti-arrow-right',    style: 'chip-warm'  },
-    { text: "I've been meaning to start this for two weeks.",            icon: 'ti ti-clock',          style: 'chip-bone'  },
-    { text: "I'm waiting until I actually feel like doing it.",          icon: 'ti ti-mood-smile',     style: 'chip-mint'  },
-    { text: "I work better when I'm not stressed. I'm very stressed.",   icon: 'ti ti-alert-triangle', style: 'chip-blush' },
-    { text: "I just need the right playlist first.",                     icon: 'ti ti-music',          style: 'chip-sage'  },
-  ],
-];
+// ── Confession Card Fanning scrollytelling ─────────────────
+function initConfessionSection() {
+  const section = document.getElementById('features');
+  const deck = document.querySelector('.confession-deck');
+  if (!section || !deck) return;
 
-function buildTickerRow(chips, elementId) {
-  const track = document.getElementById(elementId);
-  if (!track) return;
-  [...chips, ...chips].forEach(({ text, icon, style }) => {
-    const el = document.createElement('div');
-    el.className = `chip ${style}`;
-    el.innerHTML = `<i class="${icon}" aria-hidden="true"></i><span>${text}</span>`;
-    track.appendChild(el);
-  });
+  // Split scroll text into spans for word-by-word highlights
+  const highlightText = document.getElementById('scroll-text');
+  let wordSpans = [];
+  if (highlightText) {
+    const text = highlightText.innerText.trim();
+    highlightText.innerHTML = text.split(/\s+/).map(word => `<span class="highlight-word">${word}</span>`).join(' ');
+    wordSpans = highlightText.querySelectorAll('.highlight-word');
+  }
+
+  function updateConfessionFanning() {
+    const rect = section.getBoundingClientRect();
+    const totalScroll = section.offsetHeight - window.innerHeight;
+    
+    // Calculate scroll progress (0 to 1) when the section is scrolling through viewport
+    let progress = -rect.top / totalScroll;
+    progress = Math.max(0, Math.min(1, progress));
+
+    const label = section.querySelector('.confession-label');
+    const cards = deck.querySelectorAll('.confession-card');
+    const isMobile = window.innerWidth <= 768;
+    const currentScroll = window.scrollY;
+
+    // A. Sequentially highlight text words (progress 0.05 to 0.45)
+    if (wordSpans.length > 0) {
+      wordSpans.forEach((span, idx) => {
+        const thresh = 0.04 + (idx / wordSpans.length) * 0.40;
+        if (progress >= thresh) {
+          span.classList.add('active');
+        } else {
+          span.classList.remove('active');
+        }
+      });
+    }
+
+    // 1. Animate the title label ("Sound familiar?")
+    if (label) {
+      // Oscillation (Wobble / Sway): gentle tilt and translation based on scroll
+      const labelWobbleFreq = isMobile ? 0.004 : 0.003;
+      const labelWobbleAngle = Math.sin(currentScroll * labelWobbleFreq) * 2; // swing angle in degrees
+      const labelWobbleX = Math.cos(currentScroll * labelWobbleFreq) * 5;      // horizontal sway in px
+      const labelWobbleY = Math.sin(currentScroll * (labelWobbleFreq * 1.2)) * 4; // vertical sway in px
+
+      // Fly-Up & Fade Out Phase (Progress 0.62 to 0.92)
+      // The label flies up slightly earlier/faster than the rest of the cards
+      const flyStart = 0.62;
+      const flyEnd = 0.92;
+      
+      let flyProgress = 0;
+      if (progress > flyStart) {
+        flyProgress = (progress - flyStart) / (flyEnd - flyStart);
+        flyProgress = Math.max(0, Math.min(1, flyProgress));
+      }
+
+      // Accelerated lift-off using cubic easing
+      const flyEase = flyProgress * flyProgress * flyProgress;
+      
+      const flyY = flyEase * -850;            // fly up by up to 850px
+      const opacity = 1 - flyEase;            // fade out completely
+
+      // Smoothly scale down the scroll oscillation as the label exits
+      const oscillationScale = Math.max(0, 1 - flyEase);
+      const finalWobbleRot = labelWobbleAngle * oscillationScale;
+      const finalWobbleX = labelWobbleX * oscillationScale;
+      const finalWobbleY = labelWobbleY * oscillationScale;
+
+      const totalX = finalWobbleX;
+      const totalY = flyY + finalWobbleY;
+      const totalRot = finalWobbleRot;
+
+      label.style.transform = `translate3d(${totalX}px, ${totalY}px, 0) rotate(${totalRot}deg)`;
+      label.style.opacity = opacity;
+
+      // Animate highlight text together with label
+      if (highlightText) {
+        highlightText.style.transform = `translate3d(${totalX}px, ${totalY}px, 0) rotate(${totalRot}deg)`;
+        highlightText.style.opacity = opacity;
+      }
+    }
+
+    // 2. Animate the fanning cards
+    cards.forEach((card, idx) => {
+      const offset = idx - 2; // -2, -1, 0, 1, 2
+      
+      // Fanning Phase Progress (completes fanning by progress = 0.65)
+      const fanLimit = 0.65;
+      const fanProgress = Math.min(1, progress / fanLimit);
+      
+      let spreadX, rot;
+      if (isMobile) {
+        spreadX = offset * 48 * fanProgress;
+        rot = offset * 5 * fanProgress;
+      } else {
+        spreadX = offset * 160 * fanProgress;
+        rot = offset * 8 * fanProgress;
+      }
+
+      // Scroll-Driven Oscillation (Wobble / Sway back and forth)
+      // Tied to actual window.scrollY to react dynamically to active scrolling speed/direction
+      const wobbleFreq = isMobile ? 0.005 : 0.0035;
+      const wobbleAngle = Math.sin(currentScroll * wobbleFreq + idx * 1.2) * 5; // swing angle in degrees
+      const wobbleX = Math.cos(currentScroll * wobbleFreq + idx * 1.2) * 8;   // horizontal sway in px
+      const wobbleY = Math.sin(currentScroll * (wobbleFreq * 1.2) + idx * 0.8) * 5; // vertical sway in px
+
+      // Staggered Fly-Up & Fade Out Phase (Progress 0.65 to 0.95)
+      // Cards start flying up in sequential order
+      const flyStart = 0.65 + idx * 0.06; // Staggered start: 0.65, 0.71, 0.77, 0.83, 0.89
+      const flyEnd = 0.96;
+      
+      let flyProgress = 0;
+      if (progress > flyStart) {
+        flyProgress = (progress - flyStart) / (flyEnd - flyStart);
+        flyProgress = Math.max(0, Math.min(1, flyProgress));
+      }
+
+      // Accelerated lift-off using cubic easing
+      const flyEase = flyProgress * flyProgress * flyProgress;
+      
+      const flyY = flyEase * -900;            // fly up by up to 900px
+      const flyRot = flyEase * (offset * 12); // add a stylized twist as card exits
+      const opacity = 1 - flyEase;            // fade out completely
+
+      // Smoothly scale down the scroll oscillation as the card exits
+      const oscillationScale = Math.max(0, 1 - flyEase);
+      const finalWobbleRot = wobbleAngle * oscillationScale;
+      const finalWobbleX = wobbleX * oscillationScale;
+      const finalWobbleY = wobbleY * oscillationScale;
+
+      // Combine fanning, oscillation, and exit animations
+      const baseRot = offset * 3;
+      const totalX = spreadX + finalWobbleX;
+      const totalY = flyY + finalWobbleY;
+      const totalRot = baseRot + rot + finalWobbleRot + flyRot;
+
+      card.style.transform = `translate3d(${totalX}px, ${totalY}px, 0) rotate(${totalRot}deg)`;
+      card.style.opacity = opacity;
+    });
+  }
+
+  window.addEventListener('scroll', updateConfessionFanning, { passive: true });
+  window.addEventListener('resize', updateConfessionFanning, { passive: true });
+  updateConfessionFanning();
 }
 
 // ── Hero video crossfade ──────────────────────────────────
@@ -717,290 +827,371 @@ function initForm() {
 
 // ── How It Works — scroll-driven moments ─────────────────
 function initHowSection() {
-  const section = document.querySelector('.how-section');
-  if (!section) return;
+  // ── Initialize Lenis Smooth Scroll ──
+  try {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
 
-  const sticky       = section.querySelector('.how-sticky');
-  const moments      = section.querySelectorAll('.moment');
-  const screens      = section.querySelectorAll('.phone-screen');
-  const dots         = section.querySelectorAll('.progress-dot');
-  const progressTrack = document.getElementById('how-progress');
-  const phoneFrame   = document.getElementById('how-phone-frame');
+    document.documentElement.classList.add('lenis', 'lenis-smooth');
+    window.lenis = lenis;
 
-  const NUM  = 4;
-  const HALF = 0.04;
-
-  const lightStates = [
-    { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.08] },
-    { bg: [255, 253, 250], text: [26, 26, 26], glow: [240, 180, 40, 0.12] },
-    { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.16] },
-    { bg: [238, 235, 230], text: [26, 26, 26], glow: [240, 180, 40, 0.20] },
-  ];
-
-  const darkStates = [
-    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.08] },
-    { bg: [8, 8, 10], text: [255, 255, 255], glow: [240, 180, 40, 0.12] },
-    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.16] },
-    { bg: [15, 15, 19], text: [255, 255, 255], glow: [240, 180, 40, 0.20] },
-  ];
-
-  const isMobile = () => window.innerWidth <= 900;
-  let activeIndex = 0;
-  let lastIsMobile = isMobile();
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-
-  function lerpColor(c1, c2, t) {
-    const r = Math.round(lerp(c1[0], c2[0], t));
-    const g = Math.round(lerp(c1[1], c2[1], t));
-    const b = Math.round(lerp(c1[2], c2[2], t));
-    return c1.length === 4
-      ? `rgba(${r},${g},${b},${+lerp(c1[3], c2[3], t).toFixed(3)})`
-      : `rgb(${r},${g},${b})`;
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  } catch (e) {
+    console.warn("Lenis failed to initialize. Falling back to native scrolling.", e);
   }
 
-  function colorsAt(p) {
-    const isDark = document.documentElement.classList.contains('theme-dark');
-    const currentStates = isDark ? darkStates : lightStates;
-    const s = Math.max(0, Math.min(1, p)) * (currentStates.length - 1);
-    const i = Math.min(Math.floor(s), currentStates.length - 2);
-    const t = s - i;
-    return {
-      bg:   lerpColor(currentStates[i].bg,   currentStates[i + 1].bg,   t),
-      text: lerpColor(currentStates[i].text, currentStates[i + 1].text, t),
-      glow: lerpColor(currentStates[i].glow, currentStates[i + 1].glow, t),
-    };
+  // ── Robust Letter-Splitting Helper ──
+  function splitLettersRobust(el) {
+    function processNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        let text = node.textContent;
+        if (!text.trim()) return;
+        text = text.replace(/\s+/g, ' ').trim();
+
+        const words = text.split(' ');
+        const frag = document.createDocumentFragment();
+
+        words.forEach((word, wordIdx) => {
+          if (wordIdx > 0) {
+            frag.appendChild(document.createTextNode(' '));
+          }
+
+          const wordSpan = document.createElement('span');
+          wordSpan.style.display = 'inline-block';
+          wordSpan.style.whiteSpace = 'nowrap';
+
+          word.split('').forEach(ch => {
+            const charWrap = document.createElement('span');
+            charWrap.className = 'char-wrap';
+            const charInner = document.createElement('span');
+            charInner.className = 'char-inner';
+            charInner.textContent = ch;
+            charWrap.appendChild(charInner);
+            wordSpan.appendChild(charWrap);
+          });
+
+          frag.appendChild(wordSpan);
+        });
+
+        node.parentNode.replaceChild(frag, node);
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const children = Array.from(node.childNodes);
+        children.forEach(child => processNode(child));
+      }
+    }
+
+    processNode(el);
+    return el.querySelectorAll('.char-inner');
   }
 
-  function momentStyle(p, idx) {
-    const start = idx / NUM;
-    const end   = (idx + 1) / NUM;
-    let opacity = 0, ty = 30;
+  // ── Split-letter Reveal Animations for Timeline & Stats Headers ──
+  const timelineHeader = document.querySelector('.timeline-intro-headline');
+  const statsHeader = document.querySelector('.c-numbers-stack_title');
 
-    if (idx === 0) {
-      if (p < end - HALF)       { opacity = 1; ty = 0; }
-      else if (p < end + HALF)  { const t = (p - (end - HALF)) / (2 * HALF); opacity = 1 - t; ty = -20 * t; }
-      return { opacity, ty };
-    }
-
-    if (idx === NUM - 1) {
-      if (p >= start + HALF)      { opacity = 1; ty = 0; }
-      else if (p >= start - HALF) { const t = (p - (start - HALF)) / (2 * HALF); opacity = t; ty = 30 * (1 - t); }
-      return { opacity, ty };
-    }
-
-    if      (p >= start - HALF && p < start + HALF) { const t = (p - (start - HALF)) / (2 * HALF); opacity = t;     ty = 30 * (1 - t); }
-    else if (p >= start + HALF && p < end   - HALF) { opacity = 1; ty = 0; }
-    else if (p >= end   - HALF && p < end   + HALF) { const t = (p - (end - HALF))   / (2 * HALF); opacity = 1 - t; ty = -20 * t; }
-
-    return { opacity, ty };
-  }
-
-  function applyMobileState(idx) {
-    const isDark = document.documentElement.classList.contains('theme-dark');
-    const currentStates = isDark ? darkStates : lightStates;
-    const state = currentStates[idx];
-
-    const bg = `rgb(${state.bg[0]},${state.bg[1]},${state.bg[2]})`;
-    const text = `rgb(${state.text[0]},${state.text[1]},${state.text[2]})`;
-    const glow = `rgba(${state.glow[0]},${state.glow[1]},${state.glow[2]},${state.glow[3]})`;
-
-    sticky.style.background = bg;
-    sticky.style.color = text;
-    if (progressTrack) progressTrack.style.color = text;
-    if (phoneFrame) {
-      phoneFrame.style.boxShadow = `0 0 0 1px rgba(0,0,0,0.06),0 40px 80px rgba(0,0,0,0.12),0 0 60px ${glow}`;
-    }
-
-    moments.forEach((el, i) => {
-      const active = i === idx;
-      el.classList.toggle('active', active);
-      if (active) {
+  const headerObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const chars = splitLettersRobust(el);
+        
+        anime.set(chars, { scaleY: 0, opacity: 0 });
         el.style.opacity = '1';
-        el.style.transform = 'translateX(0)';
-        el.style.pointerEvents = 'auto';
-      } else {
-        el.style.opacity = '0';
-        el.style.transform = i > idx ? 'translateX(30px)' : 'translateX(-30px)';
-        el.style.pointerEvents = 'none';
+
+        anime({
+          targets: chars,
+          scaleY: [0, 1],
+          opacity: [0, 1],
+          easing: 'easeOutExpo',
+          duration: 800,
+          delay: anime.stagger(20)
+        });
+
+        observer.unobserve(el);
       }
     });
-
-    screens.forEach((el, i) => el.classList.toggle('active', i === idx));
-    dots.forEach((el, i)    => el.classList.toggle('active', i === idx));
-  }
-
-  function resetStyles() {
-    sticky.style.background = '';
-    sticky.style.color = '';
-    if (progressTrack) progressTrack.style.color = '';
-    if (phoneFrame) phoneFrame.style.boxShadow = '';
-    moments.forEach(el => {
-      el.style.opacity = '';
-      el.style.transform = '';
-      el.style.pointerEvents = '';
-      el.classList.remove('active');
-    });
-    screens.forEach(el => el.classList.remove('active'));
-    dots.forEach(el => el.classList.remove('active'));
-  }
-
-  if (phoneFrame) {
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        phoneFrame.classList.add('entered');
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-    observer.observe(section);
-  }
-
-  // Swipe logic for mobile
-  let touchStartX = 0;
-  let touchStartY = 0;
-
-  sticky.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-
-  sticky.addEventListener('touchend', e => {
-    if (!isMobile()) return;
-    const diffX = e.changedTouches[0].clientX - touchStartX;
-    const diffY = e.changedTouches[0].clientY - touchStartY;
-
-    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX < 0) {
-        if (activeIndex < NUM - 1) {
-          activeIndex++;
-          applyMobileState(activeIndex);
-        }
-      } else {
-        if (activeIndex > 0) {
-          activeIndex--;
-          applyMobileState(activeIndex);
-        }
-      }
-    }
-  }, { passive: true });
-
-  // Add click support to dots on mobile
-  dots.forEach((dot, idx) => {
-    dot.addEventListener('click', () => {
-      if (isMobile()) {
-        activeIndex = idx;
-        applyMobileState(activeIndex);
-      }
-    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
   });
 
-  function update() {
-    if (isMobile()) {
-      applyMobileState(activeIndex);
-      return;
-    }
-
-    const rect      = section.getBoundingClientRect();
-    const scrolled  = -rect.top;
-    const range     = section.offsetHeight - window.innerHeight;
-    const progress  = Math.max(0, Math.min(1, scrolled / range));
-
-    const inView = rect.top < window.innerHeight && rect.bottom > 0;
-    if (progressTrack) progressTrack.classList.toggle('visible', inView);
-
-    const c = colorsAt(progress);
-    sticky.style.background = c.bg;
-    sticky.style.color      = c.text;
-    if (progressTrack) progressTrack.style.color = c.text;
-    if (phoneFrame) {
-      phoneFrame.style.boxShadow =
-        `0 0 0 1px rgba(0,0,0,0.06),0 40px 80px rgba(0,0,0,0.12),0 0 60px ${c.glow}`;
-    }
-
-    const active = Math.min(Math.floor(progress * NUM), NUM - 1);
-
-    moments.forEach((el, i) => {
-      const { opacity, ty } = momentStyle(progress, i);
-      el.style.opacity   = opacity;
-      el.style.transform = `translateY(${ty}px)`;
-      el.classList.toggle('active', i === active);
-    });
-    screens.forEach((el, i) => el.classList.toggle('active', i === active));
-    dots.forEach((el, i)    => el.classList.toggle('active', i === active));
+  if (timelineHeader) {
+    timelineHeader.style.opacity = '0';
+    headerObserver.observe(timelineHeader);
+  }
+  if (statsHeader) {
+    statsHeader.style.opacity = '0';
+    headerObserver.observe(statsHeader);
   }
 
-  update();
-  window.addEventListener('scroll', () => {
-    if (isMobile()) {
-      applyMobileState(activeIndex);
-    } else {
-      update();
-    }
-  }, { passive: true });
-
-  window.addEventListener('resize', () => {
-    const currentIsMobile = isMobile();
-    if (currentIsMobile !== lastIsMobile) {
-      lastIsMobile = currentIsMobile;
-      resetStyles();
-      if (currentIsMobile) {
-        applyMobileState(activeIndex);
-      } else {
-        update();
+  // ── Tile Intersection Observer ──
+  const inViewObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-inview');
+        console.log('[IntersectionObserver] Element in view:', entry.target);
+        
+        // Fail-safe: if parent row is in view, force child card/illustration/corner elements to be marked in-view immediately
+        if (entry.target.classList.contains('timeline-row')) {
+          entry.target.querySelectorAll('.c-tile-animated, .c-illustration-card, .c-corner-asset').forEach(child => {
+            if (!child.classList.contains('is-inview')) {
+              child.classList.add('is-inview');
+              console.log('[IntersectionObserver] Propagated is-inview to child:', child);
+            }
+          });
+        }
       }
+    });
+  }, {
+    threshold: 0.05,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  document.querySelectorAll('.c-tile-animated, .c-illustration-card, .c-corner-asset, .timeline-row').forEach(el => {
+    inViewObserver.observe(el);
+  });
+
+  // ── Scrollytelling Character & Icon Parallax Updates ──
+  const characters = document.querySelectorAll('.c-illustration-char');
+  const physicsIcons = document.querySelectorAll('.c-illustration-icon');
+  const cornerAssets = document.querySelectorAll('.c-corner-asset');
+
+  // Initialize smooth animation state variables on elements
+  characters.forEach(char => {
+    char._currentOpacity = 0;
+    char._currentScale = 0.85;
+    char._currentY = 50;
+  });
+
+  physicsIcons.forEach(icon => {
+    icon._currentY = undefined;
+    icon._currentRot = undefined;
+  });
+
+  cornerAssets.forEach(asset => {
+    asset._currentX = undefined;
+    asset._currentY = undefined;
+    asset._currentRot = undefined;
+  });
+
+  let isTickRunning = false;
+
+  function runTick() {
+    const viewportHeight = window.innerHeight || 800;
+    const viewportCenterY = viewportHeight / 2;
+    let needsMoreTicks = false;
+
+    // 1. Polished Scroll-driven Entrance & Parallax for Mockup Characters
+    characters.forEach(char => {
+      const parentCard = char.closest('.c-illustration-card');
+      if (!parentCard) return;
+
+      const rect = parentCard.getBoundingClientRect();
+
+      // Calculate scroll entrance progress (0 at 100% of viewport height, 1 at 60% of viewport height)
+      const startY = viewportHeight * 1.0;
+      const endY = viewportHeight * 0.60;
+      const denom = startY - endY;
+      
+      let targetProgress = denom > 0 ? (startY - rect.top) / denom : 0;
+      if (isNaN(targetProgress) || !isFinite(targetProgress)) {
+        targetProgress = 0;
+      }
+      targetProgress = Math.max(0, Math.min(1, targetProgress));
+
+      // Parallax scroll translation speed
+      const speed = parseFloat(char.dataset.scrollSpeed) || -0.08;
+      const charCenter = rect.top + rect.height / 2;
+      const offset = viewportCenterY - charCenter;
+      const parallaxY = isNaN(offset) ? 0 : offset * speed;
+
+      // Entrance translation (slides up from 50px as it scrolls into view)
+      const entranceY = (1 - targetProgress) * 50;
+      const targetY = parallaxY + entranceY;
+
+      // Scale goes from 0.85 to 1.0 based on progress
+      const targetScale = 0.85 + 0.15 * targetProgress;
+      const targetOpacity = targetProgress;
+
+      // Ensure persistent states are valid numbers
+      if (char._currentOpacity === undefined || isNaN(char._currentOpacity)) char._currentOpacity = 0;
+      if (char._currentScale === undefined || isNaN(char._currentScale)) char._currentScale = 0.85;
+      if (char._currentY === undefined || isNaN(char._currentY)) char._currentY = 50;
+
+      // Smoothly interpolate values (lerp)
+      const ease = 0.08;
+      char._currentOpacity += (targetOpacity - char._currentOpacity) * ease;
+      char._currentScale += (targetScale - char._currentScale) * ease;
+      char._currentY += (targetY - char._currentY) * ease;
+
+      const flip = char.alt === 'Run 2' ? 'scaleX(-1)' : '';
+      
+      char.style.opacity = char._currentOpacity;
+      char.style.transform = `translate3d(0, ${char._currentY}px, 0) scale(${char._currentScale}) ${flip}`;
+
+      // Check if we still have visible differences to animate
+      const opacityDiff = Math.abs(targetOpacity - char._currentOpacity);
+      const scaleDiff = Math.abs(targetScale - char._currentScale);
+      const yDiff = Math.abs(targetY - char._currentY);
+      if (opacityDiff > 0.001 || scaleDiff > 0.001 || yDiff > 0.1) {
+        needsMoreTicks = true;
+      }
+    });
+
+    // 2. Parallax and Rotation on Floating Icons
+    physicsIcons.forEach(icon => {
+      const parentCard = icon.closest('.c-illustration-card');
+      if (!parentCard) return;
+
+      const rect = parentCard.getBoundingClientRect();
+      const scrollSpeed = parseFloat(icon.dataset.scrollSpeed) || 0.08;
+      const rotateSpeed = parseFloat(icon.dataset.rotateSpeed) || 0.2;
+      const iconCenter = rect.top + rect.height / 2;
+      const offset = viewportCenterY - iconCenter;
+      
+      const translateY = offset * scrollSpeed;
+      const rotation = offset * rotateSpeed;
+
+      if (icon._currentY === undefined) {
+        icon._currentY = translateY;
+        icon._currentRot = rotation;
+      }
+
+      const ease = 0.08;
+      icon._currentY += (translateY - icon._currentY) * ease;
+      icon._currentRot += (rotation - icon._currentRot) * ease;
+      
+      icon.style.transform = `translate3d(0, ${icon._currentY}px, 0) rotate(${icon._currentRot}deg)`;
+
+      const yDiff = Math.abs(translateY - icon._currentY);
+      const rotDiff = Math.abs(rotation - icon._currentRot);
+      if (yDiff > 0.1 || rotDiff > 0.1) {
+        needsMoreTicks = true;
+      }
+    });
+
+    // 3. Parallax and Rotation on Corner Assets
+    cornerAssets.forEach(asset => {
+      const parentRow = asset.closest('.timeline-row');
+      if (!parentRow) return;
+
+      const rect = parentRow.getBoundingClientRect();
+      const speed = parseFloat(asset.dataset.scrollSpeed) || 0.05;
+      const rotateSpeed = parseFloat(asset.dataset.rotateSpeed) || 0.2;
+      const assetCenter = rect.top + rect.height / 2;
+      const offset = viewportCenterY - assetCenter;
+
+      let dirX = 0;
+      let dirY = 0;
+      if (asset.classList.contains('-top-left')) {
+        dirX = 1; dirY = 1;
+      } else if (asset.classList.contains('-bottom-left')) {
+        dirX = 1; dirY = -1;
+      } else if (asset.classList.contains('-top-right')) {
+        dirX = -1; dirY = 1;
+      } else if (asset.classList.contains('-bottom-right')) {
+        dirX = -1; dirY = -1;
+      }
+
+      const translateX = offset * speed * dirX;
+      const translateY = offset * speed * dirY;
+      const rotation = offset * rotateSpeed;
+
+      const img = asset.querySelector('.c-corner-asset-img');
+      const flip = (img && img.style.transform.includes('scaleX(-1)')) ? 'scaleX(-1)' : '';
+
+      if (asset._currentX === undefined) {
+        asset._currentX = translateX;
+        asset._currentY = translateY;
+        asset._currentRot = rotation;
+      }
+
+      const ease = 0.08;
+      asset._currentX += (translateX - asset._currentX) * ease;
+      asset._currentY += (translateY - asset._currentY) * ease;
+      asset._currentRot += (rotation - asset._currentRot) * ease;
+
+      asset.style.transform = `translate3d(${asset._currentX}px, ${asset._currentY}px, 0) rotate(${asset._currentRot}deg) ${flip}`;
+
+      const xDiff = Math.abs(translateX - asset._currentX);
+      const yDiff = Math.abs(translateY - asset._currentY);
+      const rotDiff = Math.abs(rotation - asset._currentRot);
+      if (xDiff > 0.1 || yDiff > 0.1 || rotDiff > 0.1) {
+        needsMoreTicks = true;
+      }
+    });
+
+    if (needsMoreTicks) {
+      requestAnimationFrame(runTick);
     } else {
-      update();
+      isTickRunning = false;
     }
-  }, { passive: true });
+  }
+
+  function requestTick() {
+    if (!isTickRunning) {
+      isTickRunning = true;
+      requestAnimationFrame(runTick);
+    }
+  }
+
+  window.addEventListener('scroll', requestTick, { passive: true });
+  window.addEventListener('resize', requestTick, { passive: true });
+  requestTick();
+
+  // ── Stats Stacking Scroll Animation (Stepped Sticking Progress) ──
+  const statsSection = document.querySelector('.c-numbers-stack');
+  const statsListItems = document.querySelectorAll('.c-numbers-stack_list_item');
+
+  function updateStatsStacking() {
+    if (!statsSection || statsListItems.length === 0) return;
+
+    statsListItems.forEach((item, index) => {
+      const card = item.querySelector('.c-numbers-stack_card');
+      if (!card) return;
+
+      const itemRect = item.getBoundingClientRect();
+      
+      const cardIndex = index + 1;
+      const stickyThreshold = 120 + cardIndex * 30;
+      const progressStart = stickyThreshold + 220;
+      const progressEnd = stickyThreshold;
+
+      let progress = 0;
+      if (itemRect.top <= progressStart) {
+        progress = (progressStart - itemRect.top) / (progressStart - progressEnd);
+      }
+      progress = Math.max(0, Math.min(1, progress));
+
+      card.style.setProperty('--progress', progress);
+    });
+  }
+
+  window.addEventListener('scroll', updateStatsStacking, { passive: true });
+  updateStatsStacking();
 }
 
-// ── Theme System ──────────────────────────────────────────
-function initTheme() {
-  const switcher = document.getElementById('theme-switcher');
-  if (!switcher) return;
-
-  const buttons = switcher.querySelectorAll('.switcher-btn');
-  const systemMedia = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function applyTheme(theme) {
-    let activeTheme = theme;
-    if (theme === 'system') {
-      activeTheme = systemMedia.matches ? 'dark' : 'light';
-    }
-
-    if (activeTheme === 'dark') {
-      document.documentElement.classList.add('theme-dark');
-      document.documentElement.classList.remove('theme-light');
-    } else {
-      document.documentElement.classList.add('theme-light');
-      document.documentElement.classList.remove('theme-dark');
-    }
-
-    buttons.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.theme === theme);
-    });
-
-    // Force background updates in scroll sections immediately
-    window.dispatchEvent(new Event('scroll'));
-  }
-
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const theme = btn.dataset.theme;
-      localStorage.setItem('theme', theme);
-      applyTheme(theme);
-    });
+// ── Split button labels into individual characters for rolling animation ──
+function initButtons() {
+  document.querySelectorAll('.c-button_label').forEach(label => {
+    const text = label.textContent.trim();
+    label.innerHTML = text.split('').map(ch => {
+      if (ch === ' ') return '&nbsp;';
+      return `<span class="char">${ch}</span>`;
+    }).join('');
   });
-
-  systemMedia.addEventListener('change', () => {
-    const saved = localStorage.getItem('theme') || 'system';
-    if (saved === 'system') {
-      applyTheme('system');
-    }
-  });
-
-  const savedTheme = localStorage.getItem('theme') || 'system';
-  applyTheme(savedTheme);
 }
 
 // ── Throttle ──────────────────────────────────────────────
@@ -1011,7 +1202,6 @@ function throttle(fn, ms) {
 
 // ── Init ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
   initSmoothScroll();
   initHeroVideos();
   initHeroAnimation();
@@ -1019,13 +1209,39 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeroCursorGlow();
   initHeroParallax();
   initScrollAnimations();
-  buildTickerRow(confessionRows[0], 'ticker-row-1');
-  buildTickerRow(confessionRows[1], 'ticker-row-2');
-  buildTickerRow(confessionRows[2], 'ticker-row-3');
+  initConfessionSection();
   initCarousel();
   initForm();
   initHowSection();
-
-  updateNavState();
-  window.addEventListener('scroll', throttle(updateNavState, 16), { passive: true });
+  initButtons();
+  initBackgroundVideoRotation();
 });
+
+// ── Rotate global background videos with seamless cross-fades ──
+function initBackgroundVideoRotation() {
+  const videos = document.querySelectorAll('.global-video-bg video.bg-video');
+  if (videos.length < 2) return;
+
+  // Make sure all videos are playing
+  videos.forEach(v => {
+    v.play().catch(err => console.log("Video autoplay blocked or failed:", err));
+  });
+
+  let currentIndex = 0;
+  const transitionInterval = 15000; // Rotate every 15 seconds
+
+  setInterval(() => {
+    const currentVideo = videos[currentIndex];
+    currentIndex = (currentIndex + 1) % videos.length;
+    const nextVideo = videos[currentIndex];
+
+    // Cross-fade: set next active, remove active from current
+    nextVideo.classList.add('active');
+    
+    // Give it a tiny delay to start fading out current, ensuring overlap
+    setTimeout(() => {
+      currentVideo.classList.remove('active');
+    }, 100);
+  }, transitionInterval);
+}
+

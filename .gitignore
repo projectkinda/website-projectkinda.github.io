@@ -7,3 +7,7 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# local scratch and settings directories
+scratch/
+.claude/

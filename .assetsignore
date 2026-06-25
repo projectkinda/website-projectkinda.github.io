@@ -1,0 +1,14 @@
+.git/
+.wrangler
+.wrangler/*
+.wrangler/**/*
+.claude
+.claude/*
+.claude/**/*
+scratch
+scratch/*
+scratch/**/*
+node_modules/
+.gitignore
+wrangler.jsonc
+vercel.json
