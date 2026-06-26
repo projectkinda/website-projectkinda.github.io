@@ -1868,7 +1868,7 @@ a   { text-decoration: none; }
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 520px;
+  max-width: 680px;
   padding: 80px 48px;
 }
 
@@ -1884,7 +1884,7 @@ a   { text-decoration: none; }
 
 .waitlist-headline {
   font-family: 'Instrument Serif', serif;
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: clamp(50.4px, 7vw, 78.4px);
   line-height: 1.08;
   letter-spacing: -0.02em;
   color: #FFFFFF;
@@ -1892,7 +1892,7 @@ a   { text-decoration: none; }
 }
 
 .waitlist-sub {
-  font-size: 17px;
+  font-size: 23.8px;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.85);
   margin-bottom: 44px;
@@ -2287,7 +2287,7 @@ a   { text-decoration: none; }
 
 /* ── Waitlist scarcity line ── */
 .waitlist-scarcity {
-  font-size: 0.8rem;
+  font-size: 1.12rem;
   opacity: 0.6;
   margin: -0.5rem 0 1.25rem;
   text-align: center;
@@ -2568,38 +2568,38 @@ a   { text-decoration: none; }
 
 /* Planet Custom Themes */
 .-zenith { 
-  --planet-shadow-color: rgba(74, 144, 226, 0.4); 
+  --planet-shadow-color: rgba(46, 186, 113, 0.4); 
 }
 .-zenith .collectable-glow { 
-  background: radial-gradient(circle, #4a90e2 0%, transparent 70%); 
+  background: radial-gradient(circle, #2ebd59 0%, transparent 70%); 
 }
 
 .-astra { 
-  --planet-shadow-color: rgba(245, 166, 35, 0.4); 
+  --planet-shadow-color: rgba(230, 126, 34, 0.4); 
 }
 .-astra .collectable-glow { 
-  background: radial-gradient(circle, #f5a623 0%, transparent 70%); 
+  background: radial-gradient(circle, #e67e22 0%, transparent 70%); 
 }
 
 .-nebula { 
-  --planet-shadow-color: rgba(142, 212, 98, 0.4); 
+  --planet-shadow-color: rgba(255, 210, 90, 0.4); 
 }
 .-nebula .collectable-glow { 
-  background: radial-gradient(circle, #8ed462 0%, transparent 70%); 
+  background: radial-gradient(circle, #ffd25a 0%, transparent 70%); 
 }
 
 .-solis { 
-  --planet-shadow-color: rgba(189, 16, 224, 0.4); 
+  --planet-shadow-color: rgba(214, 48, 49, 0.4); 
 }
 .-solis .collectable-glow { 
-  background: radial-gradient(circle, #bd10e0 0%, transparent 70%); 
+  background: radial-gradient(circle, #d63031 0%, transparent 70%); 
 }
 
 .-aurora { 
-  --planet-shadow-color: rgba(80, 227, 194, 0.4); 
+  --planet-shadow-color: rgba(255, 107, 107, 0.4); 
 }
 .-aurora .collectable-glow { 
-  background: radial-gradient(circle, #50e3c2 0%, transparent 70%); 
+  background: radial-gradient(circle, #ff6b6b 0%, transparent 70%); 
 }
 
 .-eclipse { 
