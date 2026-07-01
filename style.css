@@ -375,13 +375,20 @@ a   { text-decoration: none; }
 
 
 .nav-logo {
-  font-family: 'Instrument Serif', serif;
-  font-size: 24px;
-  color: #ffffff;
-  font-weight: 600;
-  letter-spacing: -0.01em;
   text-decoration: none;
-  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 34px;
+  width: auto;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.nav-logo:hover .logo-img {
+  opacity: 0.85;
 }
 
 .logo-short {
@@ -534,12 +541,29 @@ a   { text-decoration: none; }
   margin: 0 auto 40px;
 }
 
+.coming-soon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 48px;
+  z-index: 5;
+}
+
+.coming-soon-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  font-family: 'Nunito', sans-serif;
+}
+
 .hero-badges {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 48px;
   z-index: 5;
 }
 
@@ -547,16 +571,20 @@ a   { text-decoration: none; }
 .store-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 50px;
   gap: 12px;
   background: #000000;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 10px 22px;
+  padding: 0 22px;
   border-radius: 12px;
   color: #FFFFFF;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .store-badge:hover {
@@ -2051,6 +2079,18 @@ a   { text-decoration: none; }
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: -0.01em;
 }
+
+.footer-logo-img {
+  height: 22px;
+  width: auto;
+  opacity: 0.35;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.footer-logo-img:hover {
+  opacity: 0.6;
+}
 .footer-copy {
   font-family: 'Nunito', sans-serif;
   font-size: 13px;
@@ -2312,6 +2352,9 @@ a   { text-decoration: none; }
     bottom: auto;
     padding: 6px 8px 6px 12px;
     gap: 8px;
+  }
+  .logo-img {
+    height: 28px;
   }
   .logo-full {
     display: none;
